@@ -12,18 +12,19 @@ class ExprVisitor {
 public:
 	virtual void visitColumnExpr(ColumnExpr &expr) = 0;
 	virtual void visitCountExpr(CountExpr &expr) = 0;
+	virtual ~ExprVisitor() = default;
 };
 
 class Expr {
 public:
 	virtual void accept(ExprVisitor &visitor) = 0;
-	virtual std::string to_string() const;
+	virtual std::string to_string() const = 0;
 	virtual ~Expr() = default;
 };
 
 class VarcharType {
 public:
-	VarcharType(int count, std::string patter);
+	VarcharType(int count, std::string pattern);
 	std::string to_string() const;
 	~VarcharType() = default;
 public:
@@ -43,11 +44,9 @@ public:
 
 class BooleanType {
 public:
-	BooleanType(bool value);
+	BooleanType() = default;
 	std::string to_string() const;
 	~BooleanType() = default;
-public:
-	bool m_value;
 };
 
 using ColumnType = std::variant<VarcharType, IntType, BooleanType>;

@@ -15,10 +15,8 @@ std::string IntType::to_string() const {
 	return std::format("IntType[{}]", m_start);
 }
 
-BooleanType::BooleanType(bool value) :
-	m_value(value) {}
 std::string BooleanType::to_string() const {
-	return std::format("BooleanType[{}]", m_value ? "True" : "False" );
+	return "BooleanType[]";
 }
 
 ColumnExpr::ColumnExpr(std::string name, ColumnType column_type) :
