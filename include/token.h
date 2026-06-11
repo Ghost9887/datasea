@@ -14,7 +14,9 @@ enum class TokenType {
 
 	VARCHAR, INT, BOOLEAN,
 
-	TABLE, COLUMN, COUNT
+	TABLE, COLUMN, COUNT,
+
+	UKNOWN
 };
 
 inline static const std::unordered_map<TokenType, std::string> tokens_map = {
@@ -30,7 +32,9 @@ inline static const std::unordered_map<TokenType, std::string> tokens_map = {
 	{TokenType::BOOLEAN, "Boolean"}, 
 
 	{TokenType::TABLE, "Table"}, {TokenType::COLUMN, "Column"},
-	{TokenType::COUNT, "Count"}
+	{TokenType::COUNT, "Count"},
+
+	{TokenType::UKNOWN, "Uknown"},
 };
 
 inline static const std::unordered_map<std::string, TokenType> keywords_map = {

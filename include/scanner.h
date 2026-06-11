@@ -24,6 +24,8 @@ private:
 	void make_token(TokenType type);
 	void make_token(TokenType type, Value value);
 	void parse_string();
+	void parse_digit();
+	void parse_keyword();
 };
 
 #endif

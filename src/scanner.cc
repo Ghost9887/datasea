@@ -22,7 +22,13 @@ std::vector<Token> Scanner::tokenize() {
 			case ',': make_token(TokenType::COMMA); break;
 			case '\n': m_line++; m_column = 0; break;
 			case '"': parse_string(); break;
-			default: break;
+			default: {
+				 if (std::isdigit(c)) {
+					 parse_digit();
+				 }else if (std::isalpha(c)) {
+					 parse_keyword();
+				 }
+			}; break;
 		}
 	}
 
@@ -55,4 +61,24 @@ void Scanner::parse_string() {
 	while (in_bounds() && peek() != '"') advance();
 	make_token(TokenType::STRING, m_source.substr(m_start, m_current - m_start));
 	advance();
+}
+
+void Scanner::parse_digit() {
+	while(std::isdigit(peek())) {
+		advance();
+	}
+	std::string digit { m_source.substr(m_start, m_current - m_start) };
+	make_token(TokenType::DIGIT, atoi(digit.c_str()));
+}
+
+void Scanner::parse_keyword() {
+	while (std::isalpha(peek())) advance();
+	
+	std::string keyword { m_source.substr(m_start, m_current - m_start) };
+
+	if (keywords_map.find(keyword) != keywords_map.end()) {
+		make_token(keywords_map.at(keyword));
+	} else {
+		make_token(TokenType::UKNOWN);
+	}
 }
