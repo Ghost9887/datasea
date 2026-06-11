@@ -13,7 +13,7 @@ public:
 private:
     static std::string format(const std::string& message) {
         std::ostringstream oss;
-        oss << "\n[ Error ]\n"
+        oss << "\n[ Parse Error ]\n"
             << "reason: " << message;
         return oss.str();
     }

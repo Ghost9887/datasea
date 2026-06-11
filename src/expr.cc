@@ -1,7 +1,7 @@
 #include <expr.h>
 
 VarcharType::VarcharType(int count, std::string pattern) :
-	m_count(count), m_pattern(pattern) {}
+	m_count(count), m_pattern(std::move(pattern)) {}
 std::string VarcharType::to_string() const {
 	return std::format("VarcharType[{}, {}]", std::to_string(m_count), m_pattern);
 }
@@ -20,7 +20,7 @@ std::string BooleanType::to_string() const {
 }
 
 ColumnExpr::ColumnExpr(std::string name, ColumnType column_type) :
-	m_name(name), m_column_type(column_type) {}
+	m_name(std::move(name)), m_column_type(column_type) {}
 void ColumnExpr::accept(ExprVisitor &visitor) {
 	visitor.visitColumnExpr(*this);
 }

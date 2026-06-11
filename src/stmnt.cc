@@ -1,7 +1,7 @@
 #include <stmnt.h>
 
 TableStmnt::TableStmnt(std::string name, std::unique_ptr<Stmnt> body) :
-	m_name(name), m_body(std::move(body)) {}
+	m_name(std::move(name)), m_body(std::move(body)) {}
 void TableStmnt::accept(StmntVisitor &visitor) {
 	visitor.visitTableStmnt(*this);
 }
