@@ -6,7 +6,7 @@
 #include <sstream>
 
 void print_help() {
-	std::cout << "Usage: ./datasea <file_path>" << std::endl;
+	std::cout << "Usage: ./datasea <file_path> [output_file_name]" << std::endl;
 }
 
 std::string read_file(const char *file_path) {
@@ -21,11 +21,18 @@ std::string read_file(const char *file_path) {
 
 int main(int argc, char **argv) {
 
-	if (argc != 2) {
+	if (argc != 2 && argc != 3) {
 		print_help();
 		return 0;
 	}
-	
+
+	std::string output_file_name { argc == 3 ? argv[2] : "output.sql" };
+
+	if (!output_file_name.ends_with(".sql")) {
+		std::cout << "Output file name must end with .sql" << std::endl;
+		return 0;
+	}
+
 	std::string source { read_file(argv[1]) };
 
 	Scanner scanner { std::move(source) };
@@ -45,6 +52,8 @@ int main(int argc, char **argv) {
 	Generator generator {};
 	Interpreter interpreter(std::move(statements), generator);
 	interpreter.interpret();
+
+	generator.generate(std::move(output_file_name));
 
 	return 0;
 }
