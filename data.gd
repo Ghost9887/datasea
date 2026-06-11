@@ -1,13 +1,3 @@
-()
-{}
-.
-..
-,
-"hello, world"
-""
-45
-111
-0
-table
-column
-test
+table("users") {
+	column("name", varchar(255), "first_name.last_name"),
+}
