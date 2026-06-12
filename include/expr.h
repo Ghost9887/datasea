@@ -34,12 +34,13 @@ public:
 
 class IntType {
 public:
-	IntType(int start, std::optional<int> end);
+	IntType(int start, std::optional<int> end, bool increment);
 	std::string to_string() const;
 	~IntType() = default;
 public:
 	int m_start;
 	std::optional<int> m_end;
+    bool m_increment;
 };
 
 class BooleanType {

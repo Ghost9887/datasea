@@ -6,13 +6,13 @@ std::string VarcharType::to_string() const {
 	return std::format("VarcharType[{}, {}]", std::to_string(m_count), m_pattern);
 }
 
-IntType::IntType(int start, std::optional<int> end) :
-	m_start(start), m_end(end) {}
+IntType::IntType(int start, std::optional<int> end, bool increment) :
+	m_start(start), m_end(end), m_increment(increment) {}
 std::string IntType::to_string() const {
 	if (m_end.has_value()) {
-		return std::format("IntType[{}..{}]", m_start, m_end.value());
+		return std::format("IntType[{}..{}, {}]", m_start, m_end.value(), m_increment ? "Increment" : "Random");
 	}
-	return std::format("IntType[{}]", m_start);
+	return std::format("IntType[{}, {}]", m_start, m_increment ? "Increment" : "Random");
 }
 
 std::string BooleanType::to_string() const {

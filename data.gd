@@ -1,7 +1,7 @@
 table("users") {
-	column("id", int(0..)),
+	column("id", int(0..), increment),
 	column("name", varchar(100), "first_name last_name"),
-	column("age", int(1..100)),
+	column("age", int(1..100), random),
 	column("active", boolean),
-	count(1000)
+	count(10)
 }

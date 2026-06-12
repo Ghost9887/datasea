@@ -13,10 +13,16 @@ public:
 	Generator() = default;
 	void generate(const std::string output_file_name);
 	~Generator() = default;
+private:
+    std::string column_data();
+    std::string column_names();
+    std::string varchar_data(VarcharColumn &column);
+    std::string int_data(IntColumn &column);
+    std::string boolean_data(BooleanColumn &column);
 public:
 	std::string m_table_name {};
 	std::vector<Column> m_columns {};
-	int count {};
+	int m_count {};
 };
 
 #endif

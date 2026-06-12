@@ -16,12 +16,13 @@ public:
 
 class IntColumn {
 public:
-	IntColumn(std::string name, int start, std::optional<int> end); 
+	IntColumn(std::string name, int start, std::optional<int> end, bool increment); 
 	~IntColumn() = default;
 public:
 	std::string m_name;
 	int m_start;
 	std::optional<int> m_end;
+    bool m_increment;
 };
 
 class BooleanColumn {

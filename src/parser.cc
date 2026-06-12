@@ -102,8 +102,14 @@ ColumnType Parser::parse_int_type() {
 	if (match(TokenType::DIGIT)) {
 		end = std::get<int>(previous().m_value);
 	}
-	consume(TokenType::RPAREN, "Expected ')'.");
-	return IntType(start, end);
+    consume(TokenType::RPAREN, "Expected ')'.");
+    bool increment { false };
+    if (match(TokenType::COMMA)) {
+        if (match(TokenType::INCREMENT)) increment = true;
+        else if (match(TokenType::RANDOM)) increment = false;
+        else error("Expected 'increment' or 'random'.");
+    }
+	return IntType(start, end, increment);
 }
 
 ColumnType Parser::parse_boolean_type() {

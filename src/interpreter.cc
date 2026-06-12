@@ -34,7 +34,8 @@ void Interpreter::visitColumnExpr(ColumnExpr &expr) {
 			IntColumn (
 				expr.m_name,
 				std::get<IntType>(expr.m_column_type).m_start,
-				std::get<IntType>(expr.m_column_type).m_end
+				std::get<IntType>(expr.m_column_type).m_end,
+                std::get<IntType>(expr.m_column_type).m_increment
 			)
 		);
 	}else if (std::holds_alternative<BooleanType>(expr.m_column_type)) {
@@ -47,7 +48,7 @@ void Interpreter::visitColumnExpr(ColumnExpr &expr) {
 }
 
 void Interpreter::visitCountExpr(CountExpr &expr) {
-	m_generator.count = expr.m_count;
+	m_generator.m_count = expr.m_count;
 }
 
 void Interpreter::execute(Stmnt &stmnt) {

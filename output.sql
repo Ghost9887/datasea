@@ -1,0 +1,10 @@
+INSERT INTO users(id, name, age, active) VALUES (0, Not implemented, 66, TRUE);
+INSERT INTO users(id, name, age, active) VALUES (1, Not implemented, 8, FALSE);
+INSERT INTO users(id, name, age, active) VALUES (2, Not implemented, 69, TRUE);
+INSERT INTO users(id, name, age, active) VALUES (3, Not implemented, 67, FALSE);
+INSERT INTO users(id, name, age, active) VALUES (4, Not implemented, 82, TRUE);
+INSERT INTO users(id, name, age, active) VALUES (5, Not implemented, 72, TRUE);
+INSERT INTO users(id, name, age, active) VALUES (6, Not implemented, 42, FALSE);
+INSERT INTO users(id, name, age, active) VALUES (7, Not implemented, 96, FALSE);
+INSERT INTO users(id, name, age, active) VALUES (8, Not implemented, 11, TRUE);
+INSERT INTO users(id, name, age, active) VALUES (9, Not implemented, 38, FALSE);
