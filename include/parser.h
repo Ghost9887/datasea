@@ -16,6 +16,7 @@ private:
 	std::unique_ptr<Stmnt> statement();
 	std::unique_ptr<Stmnt> parse_table();
 	std::unique_ptr<Stmnt> parse_block();
+    std::unique_ptr<Stmnt> parse_locale();
 	std::unique_ptr<Expr> expression();
 	std::unique_ptr<Expr> parse_column();
 	std::unique_ptr<Expr> parse_count();

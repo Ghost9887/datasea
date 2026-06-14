@@ -23,3 +23,13 @@ std::string BlockStmnt::to_string() const {
 	res += " ]";
 	return res;
 }
+
+LocaleStmnt::LocaleStmnt(std::string locale) :
+    m_locale(locale) {}
+void LocaleStmnt::accept(StmntVisitor &visitor) {
+    visitor.visitLocaleStmnt(*this);
+}
+std::string LocaleStmnt::to_string() const {
+    return std::format("LocaleStmnt[{}]", m_locale);
+}
+

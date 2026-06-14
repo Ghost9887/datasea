@@ -21,6 +21,7 @@ private:
     std::string boolean_data(BooleanColumn &column);
     int generate_random_int(int start, int end);
 public:
+    std::string m_locale {};
 	std::string m_table_name {};
 	std::vector<Column> m_columns {};
 	int m_count {};

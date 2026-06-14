@@ -20,6 +20,7 @@ std::vector<std::unique_ptr<Stmnt>> Parser::parse() {
 std::unique_ptr<Stmnt> Parser::statement() {
 	if (match(TokenType::TABLE)) return parse_table();
 	else if (match(TokenType::LBRACE)) return parse_block();
+    else if (match(TokenType::LOCALE)) return parse_locale();
 
 	error("Expected 'table' || 'block'.");
 }
@@ -47,6 +48,15 @@ std::unique_ptr<Stmnt> Parser::parse_block() {
 		}else break;
 	}
 	return std::make_unique<BlockStmnt>(std::move(expressions));
+}
+
+std::unique_ptr<Stmnt> Parser::parse_locale() {
+    consume(TokenType::LPAREN, "Expected '('.");
+    consume(TokenType::STRING, "Expected 'locale_value'.");
+    std::string locale { std::get<std::string>(previous().m_value) };
+    consume(TokenType::RPAREN, "Expected ')'.");
+
+    return std::make_unique<LocaleStmnt>(std::move(locale));
 }
 
 std::unique_ptr<Expr> Parser::expression() {
@@ -83,14 +93,10 @@ ColumnType Parser::parse_column_type() {
 }
 
 ColumnType Parser::parse_varchar_type() {
-	consume(TokenType::LPAREN, "Expected '('.");
-	consume(TokenType::DIGIT, "Expected 'varchar amount'.");
-	int amount { std::get<int>(previous().m_value) };
-	consume(TokenType::RPAREN, "Expected ')'.");
 	consume(TokenType::COMMA, "Expected ','.");
 	consume(TokenType::STRING, "Expected 'pattern'.");
 	std::string pattern { std::get<std::string>(previous().m_value) };
-	return VarcharType(amount, pattern);
+	return VarcharType(pattern);
 }
 
 ColumnType Parser::parse_int_type() {

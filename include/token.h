@@ -16,6 +16,8 @@ enum class TokenType {
 
 	TABLE, COLUMN, COUNT, INCREMENT, RANDOM,
 
+    LOCALE,
+
 	UKNOWN
 };
 
@@ -35,6 +37,8 @@ inline static const std::unordered_map<TokenType, std::string> tokens_map = {
 	{TokenType::COUNT, "Count"}, {TokenType::INCREMENT, "Increment"},
     {TokenType::RANDOM, "Random"},
 
+    {TokenType::LOCALE, "Locale"},
+
 	{TokenType::UKNOWN, "Uknown"},
 };
 
@@ -43,6 +47,7 @@ inline static const std::unordered_map<std::string, TokenType> keywords_map = {
 	{"boolean", TokenType::BOOLEAN}, {"table", TokenType::TABLE},
 	{"column", TokenType::COLUMN}, {"count", TokenType::COUNT},
     {"increment", TokenType::INCREMENT}, {"random", TokenType::RANDOM},
+    {"locale", TokenType::LOCALE},
 };
 
 using Value = std::variant<std::monostate, int, std::string, bool>;

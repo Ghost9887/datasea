@@ -24,11 +24,10 @@ public:
 
 class VarcharType {
 public:
-	VarcharType(int count, std::string pattern);
+	VarcharType(std::string pattern);
 	std::string to_string() const;
 	~VarcharType() = default;
 public:
-	int m_count;
 	std::string m_pattern;
 };
 

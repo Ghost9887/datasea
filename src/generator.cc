@@ -1,16 +1,17 @@
 #include <generator.h>
-#include <fstream>
 #include <random>
 #include <climits>
 #include <unordered_map>
+#include <fstream>
+#include <vector>
 
 void Generator::generate(const std::string output_file_name) {
     std::ofstream output_file("../" + output_file_name);
 
-    for (size_t i = 0; i < m_count; i++) {
+    for (int i = 0; i < m_count; i++) {
         output_file << std::format("INSERT INTO {}({}) VALUES ({});\n", m_table_name, column_names(),  column_data());
     }
-    
+
     output_file.close();
 }
 
@@ -52,13 +53,58 @@ std::string Generator::column_data() {
 }
 
 std::string Generator::varchar_data(VarcharColumn &column) {
-    return "Not implemented";
+    switch (column.m_data.size()) {
+        case 1: 
+            return std::vformat(
+                    column.m_pattern, 
+                        std::make_format_args(
+                            column.m_data[0][generate_random_int(0, column.m_data[0].size() - 1)]
+                        )  
+                    );
+        case 2:
+            return std::vformat(
+                    column.m_pattern,
+                        std::make_format_args(
+                            column.m_data[0][generate_random_int(0, column.m_data[0].size() - 1)],
+                            column.m_data[1][generate_random_int(0, column.m_data[1].size() - 1)]
+                        )
+                    );
+        case 3:
+            return  std::vformat(
+                        column.m_pattern,
+                        std::make_format_args(
+                            column.m_data[0][generate_random_int(0, column.m_data[0].size() - 1)],
+                            column.m_data[1][generate_random_int(0, column.m_data[1].size() - 1)],
+                            column.m_data[2][generate_random_int(0, column.m_data[2].size() - 1)]
+                        )
+                    );
+        case 4:
+            return  std::vformat(
+                        column.m_pattern,
+                        std::make_format_args(
+                            column.m_data[0][generate_random_int(0, column.m_data[0].size() - 1)],
+                            column.m_data[1][generate_random_int(0, column.m_data[1].size() - 1)],
+                            column.m_data[2][generate_random_int(0, column.m_data[2].size() - 1)],
+                            column.m_data[3][generate_random_int(0, column.m_data[3].size() - 1)]   
+                        )
+                    );
+        case 5:
+            return  std::vformat(
+                        column.m_pattern,
+                        std::make_format_args(
+                            column.m_data[0][generate_random_int(0, column.m_data[0].size() - 1)],
+                            column.m_data[1][generate_random_int(0, column.m_data[1].size() - 1)],
+                            column.m_data[2][generate_random_int(0, column.m_data[2].size() - 1)],
+                            column.m_data[3][generate_random_int(0, column.m_data[3].size() - 1)],   
+                            column.m_data[4][generate_random_int(0, column.m_data[4].size() - 1)]
+                        )
+                    );
+        default: return "";
+    }
 }
-
 
 std::string Generator::int_data(IntColumn &column) {
     if (!column.m_increment) {
-        static std::mt19937 rng(std::random_device{}());
         int max_value = column.m_end.has_value() ? column.m_end.value() : std::numeric_limits<int>::max();
 
         return std::to_string(generate_random_int(column.m_start, max_value));
@@ -71,7 +117,7 @@ std::string Generator::int_data(IntColumn &column) {
     }
 }
 
-std::string Generator::boolean_data(BooleanColumn &column) {
+std::string Generator::boolean_data([[maybe_unused]]BooleanColumn &column) {
     return generate_random_int(0, 1) == 1 ? "TRUE" : "FALSE";
 }
 

@@ -3,15 +3,16 @@
 
 #include <common.h>
 #include <optional>
+#include <vector>
 
 class VarcharColumn {
 public:
-	VarcharColumn(std::string name, int count, std::string pattern);
+	VarcharColumn(std::string name, std::vector<std::vector<std::string>> data, std::string pattern);
 	~VarcharColumn() = default;
 public:
 	std::string m_name;
-	int m_count;
-	std::string m_pattern;
+    std::vector<std::vector<std::string>> m_data;
+    std::string m_pattern;
 };
 
 class IntColumn {

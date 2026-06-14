@@ -1,9 +1,9 @@
 #include <expr.h>
 
-VarcharType::VarcharType(int count, std::string pattern) :
-	m_count(count), m_pattern(std::move(pattern)) {}
+VarcharType::VarcharType(std::string pattern) :
+	m_pattern(std::move(pattern)) {}
 std::string VarcharType::to_string() const {
-	return std::format("VarcharType[{}, {}]", std::to_string(m_count), m_pattern);
+	return std::format("VarcharType[{}]", m_pattern);
 }
 
 IntType::IntType(int start, std::optional<int> end, bool increment) :
