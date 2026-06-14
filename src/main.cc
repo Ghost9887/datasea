@@ -45,14 +45,23 @@ int main(int argc, char **argv) {
 	Scanner scanner { std::move(source) };
 	std::vector<Token> tokens { scanner.tokenize() };
 
+    /*
+    for (Token &token : tokens) {
+        std::cout << token.to_string() << std::endl;
+    }
+    */
+
 	Parser parser { tokens };
 	std::vector<std::unique_ptr<Stmnt>> statements { parser.parse() };
 
-	Generator generator {};
-	Interpreter interpreter(std::move(statements), generator);
-	interpreter.interpret();
+    /*
+    for (size_t i { 0 }; i < statements.size(); i++) {
+        std::cout << statements.at(i)->to_string() << std::endl;;
+    }
+    */
 
-	generator.generate(std::move(output_file_name));
+    Interpreter interpreter { output_file_name, std::move(statements) };
+    interpreter.interpret();
 
     std::cout << "Data generated succesfully" << std::endl;
 

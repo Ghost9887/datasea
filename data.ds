@@ -1,11 +1,12 @@
-locale("us")
+locale("us");
 
-table("users") {
-    column("id", int(0..), increment),
-    column("name", varchar, "{first_name} {last_name}"),
-    column("email", varchar, "{first_name}.{last_name}@email.com"),
-    column("age", int(18..99)),
-    column("sex", varchar, "{sex}"),
-    column("alive", boolean),
-    count(10)
+rows(10) {
+    table("users") {
+        column("id", int, increment(0..));
+        column("first_name", varchar, gen(firstname));
+        column("last_name", varchar, gen(lastname));
+        column("age", int, random(18..99));
+        column("sex", varchar, gen(sex));
+        column("alive", boolean, gen(boolean));
+    }
 }

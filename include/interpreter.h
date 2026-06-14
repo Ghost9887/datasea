@@ -3,27 +3,41 @@
 
 #include <common.h>
 #include <stmnt.h>
-#include <generator.h>
 #include <interpret_error.h>
+#include <unordered_map>
+#include <fstream>
+
+using CachedData = std::unordered_map<TokenType, std::vector<std::string>>;
 
 class Interpreter : public StmntVisitor, public ExprVisitor {
 public:
-	Interpreter(std::vector<std::unique_ptr<Stmnt>> statements, Generator &generator);
-	void interpret();
-	~Interpreter() = default;
+    Interpreter(std::string output, std::vector<std::unique_ptr<Stmnt>> statements);
+    void interpret();
+    ~Interpreter() = default;
 private:
+    void visitRowStmnt(RowStmnt &stmnt) override;
 	void visitTableStmnt(TableStmnt &stmnt) override;
 	void visitBlockStmnt(BlockStmnt &stmnt) override;
     void visitLocaleStmnt(LocaleStmnt &stmnt) override;
-	void visitColumnExpr(ColumnExpr &expr) override;
-	void visitCountExpr(CountExpr &expr) override;
-	void execute(Stmnt &stmnt);
-	void evaluate(Expr &expr);
-    std::vector<std::vector<std::string>> parse_pattern(std::string &pattern);
-    std::vector<std::string> read_data(const std::string &key);
+    void visitColumnStmnt(ColumnStmnt &stmnt) override;
+    void visitIncrementExpr(IncrementExpr &expr) override;
+    void visitRandomExpr(RandomExpr &expr) override;
+    void visitGenExpr(GenExpr &expr) override;
+    void visitFormatExpr(FormatExpr &expr) override;
+    void execute(Stmnt &stmnt);
+    void evaluate(Expr &expr);
+    int generate_random_int(int start, int end);
+    std::string cache_data(CachedData &cached_data, std::string &&file_name, TokenType type);
+    std::string build_query(const std::string &table_name);
+    void write(const std::string &content);
+    [[noreturn]]
+    void error(const std::string &message);
 private:
-	std::vector<std::unique_ptr<Stmnt>> m_statements;
-	Generator &m_generator;
+    std::ofstream m_output_file;
+    std::vector<std::unique_ptr<Stmnt>> m_statements;
+    std::string m_locale {};
+    std::vector<std::string> m_column_names {};
+    std::vector<std::string> m_column_data {};
 };
 
 #endif

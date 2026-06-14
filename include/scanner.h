@@ -14,7 +14,7 @@ private:
 	std::string m_source;
 	size_t m_start { 0 };
 	size_t m_current { 0 };
-	size_t m_line { 0 };
+	size_t m_line { 1 };
 	size_t m_column { 0 };
 	std::vector<Token> m_tokens {};
 private:
@@ -25,7 +25,9 @@ private:
 	void make_token(TokenType type, Value value);
 	void parse_string();
 	void parse_digit();
-	void parse_keyword();
+    bool is_alpha_numeric(char c);
+	void parse_identifier();
+    
 };
 
 #endif

@@ -17,13 +17,14 @@ private:
 	std::unique_ptr<Stmnt> parse_table();
 	std::unique_ptr<Stmnt> parse_block();
     std::unique_ptr<Stmnt> parse_locale();
+    std::unique_ptr<Stmnt> parse_rows();
+    std::unique_ptr<Stmnt> parse_column();
 	std::unique_ptr<Expr> expression();
-	std::unique_ptr<Expr> parse_column();
-	std::unique_ptr<Expr> parse_count();
+    std::unique_ptr<Expr> parse_increment();
+    std::unique_ptr<Expr> parse_random();
+    std::unique_ptr<Expr> parse_gen();
+    std::unique_ptr<Expr> parse_format();
 	ColumnType parse_column_type();
-	ColumnType parse_varchar_type();
-	ColumnType parse_int_type();
-	ColumnType parse_boolean_type();
 	template<typename... TokenTypes>
 	bool match(TokenTypes... types);
 	std::optional<std::reference_wrapper<Token>> peek();

@@ -1,46 +1,48 @@
 #include <expr.h>
 
-VarcharType::VarcharType(std::string pattern) :
-	m_pattern(std::move(pattern)) {}
-std::string VarcharType::to_string() const {
-	return std::format("VarcharType[{}]", m_pattern);
+IncrementExpr::IncrementExpr(int start, std::optional<int> end) :
+    m_start(start), m_end(end), m_counter(start) {}
+void IncrementExpr::accept(ExprVisitor &visitor) {
+    visitor.visitIncrementExpr(*this);
+}
+std::string IncrementExpr::to_string() const {
+    if (m_end.has_value()) {
+        return std::format("IncrementExpr[{}..{}]", std::to_string(m_start), std::to_string(m_end.value()));
+    }
+    return std::format("IncrementExpr[{}..]", std::to_string(m_start));
 }
 
-IntType::IntType(int start, std::optional<int> end, bool increment) :
-	m_start(start), m_end(end), m_increment(increment) {}
-std::string IntType::to_string() const {
-	if (m_end.has_value()) {
-		return std::format("IntType[{}..{}, {}]", m_start, m_end.value(), m_increment ? "Increment" : "Random");
-	}
-	return std::format("IntType[{}, {}]", m_start, m_increment ? "Increment" : "Random");
+RandomExpr::RandomExpr(int start, std::optional<int> end) :
+    m_start(start), m_end(end) {}
+void RandomExpr::accept(ExprVisitor &visitor) {
+    visitor.visitRandomExpr(*this);
+}
+std::string RandomExpr::to_string() const {
+    if (m_end.has_value()) {
+        return std::format("RandomExpr[{}..{}]", std::to_string(m_start), std::to_string(m_end.value()));
+    }
+    return std::format("RandomExpr[{}..]", std::to_string(m_start));
 }
 
-std::string BooleanType::to_string() const {
-	return "BooleanType[]";
+GenExpr::GenExpr(TokenType type) :
+    m_type(type) {}
+void GenExpr::accept(ExprVisitor &visitor) {
+    visitor.visitGenExpr(*this);
+}
+std::string GenExpr::to_string() const {
+    return std::format("GenExpr[{}]", tokens_map.at(m_type)); 
 }
 
-ColumnExpr::ColumnExpr(std::string name, ColumnType column_type) :
-	m_name(std::move(name)), m_column_type(column_type) {}
-void ColumnExpr::accept(ExprVisitor &visitor) {
-	visitor.visitColumnExpr(*this);
+FormatExpr::FormatExpr(std::string pattern, std::vector<std::unique_ptr<Expr>> variables) :
+    m_pattern(pattern), m_variables(std::move(variables)) {}
+void FormatExpr::accept(ExprVisitor &visitor) {
+    visitor.visitFormatExpr(*this);
 }
-std::string ColumnExpr::to_string() const {
-	std::string column_type_string {};
-	if (std::holds_alternative<VarcharType>(m_column_type)) 
-		column_type_string = std::get<VarcharType>(m_column_type).to_string();
-	else if (std::holds_alternative<IntType>(m_column_type)) 
-		column_type_string = std::get<IntType>(m_column_type).to_string();
-	else if (std::holds_alternative<BooleanType>(m_column_type)) 
-		column_type_string = std::get<BooleanType>(m_column_type).to_string();
-
-	return std::format("ColumnExpr[{}, {}]", m_name, column_type_string);
-}
-
-CountExpr::CountExpr(int count) :
-	m_count(count) {}
-void CountExpr::accept(ExprVisitor &visitor) {
-	visitor.visitCountExpr(*this);
-}
-std::string CountExpr::to_string() const {
-	return std::format("CountExpr[{}]", std::to_string(m_count));
+std::string FormatExpr::to_string() const {
+    std::string res { std::format("FormatExpr['{}', ", m_pattern) };
+    for (size_t i {0}; i < m_variables.size(); i++) {
+        res += m_variables.at(i)->to_string(); 
+    }
+    res += "]";
+    return res;
 }

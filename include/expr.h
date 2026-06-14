@@ -2,16 +2,21 @@
 #define EXPR_H
 
 #include <common.h>
-#include <optional>
-#include <variant>
+#include <token.h>
+#include <vector>
+#include <memory>
 
-class ColumnExpr;
-class CountExpr;
+class IncrementExpr;
+class RandomExpr;
+class GenExpr;
+class FormatExpr;
 
 class ExprVisitor {
 public:
-	virtual void visitColumnExpr(ColumnExpr &expr) = 0;
-	virtual void visitCountExpr(CountExpr &expr) = 0;
+    virtual void visitIncrementExpr(IncrementExpr &expr) = 0;
+    virtual void visitRandomExpr(RandomExpr &expr) = 0;
+    virtual void visitGenExpr(GenExpr &expr) = 0;
+    virtual void visitFormatExpr(FormatExpr &expr) = 0;
 	virtual ~ExprVisitor() = default;
 };
 
@@ -22,52 +27,44 @@ public:
 	virtual ~Expr() = default;
 };
 
-class VarcharType {
+class IncrementExpr : public Expr {
 public:
-	VarcharType(std::string pattern);
-	std::string to_string() const;
-	~VarcharType() = default;
+    IncrementExpr(int start, std::optional<int> end);
+    void accept(ExprVisitor &visitor) override;
+    std::string to_string() const override;
 public:
-	std::string m_pattern;
+    int m_start;
+    std::optional<int> m_end;
+    int m_counter;
 };
 
-class IntType {
+class RandomExpr : public Expr {
 public:
-	IntType(int start, std::optional<int> end, bool increment);
-	std::string to_string() const;
-	~IntType() = default;
+    RandomExpr(int start, std::optional<int> end);
+    void accept(ExprVisitor &visitor) override;
+    std::string to_string() const override;
 public:
-	int m_start;
-	std::optional<int> m_end;
-    bool m_increment;
+    int m_start;
+    std::optional<int> m_end;
 };
 
-class BooleanType {
+class GenExpr : public Expr {
 public:
-	BooleanType() = default;
-	std::string to_string() const;
-	~BooleanType() = default;
+    GenExpr(TokenType type);
+    void accept(ExprVisitor &visitor) override;
+    std::string to_string() const override;
+public:
+    TokenType m_type;
 };
 
-using ColumnType = std::variant<VarcharType, IntType, BooleanType>;
-
-class ColumnExpr : public Expr {
+class FormatExpr : public Expr {
 public:
-	ColumnExpr(std::string name, ColumnType column_type);
-	void accept(ExprVisitor &visitor) override;
-	std::string to_string() const override;
+    FormatExpr(std::string pattern, std::vector<std::unique_ptr<Expr>> variables);
+    void accept(ExprVisitor &visitor) override;
+    std::string to_string() const override;
 public:
-	std::string m_name;
-	ColumnType m_column_type;
-};
-
-class CountExpr : public Expr {
-public: 
-	CountExpr(int count);
-	void accept(ExprVisitor &visitor) override;
-	std::string to_string() const override;
-public:
-	int m_count;
+    std::string m_pattern;
+    std::vector<std::unique_ptr<Expr>> m_variables;
 };
 
 #endif

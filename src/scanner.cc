@@ -20,13 +20,14 @@ std::vector<Token> Scanner::tokenize() {
 				}else make_token(TokenType::DOT);
 			};break;
 			case ',': make_token(TokenType::COMMA); break;
+            case ';': make_token(TokenType::SEMICOLON); break;
 			case '\n': m_line++; m_column = 0; break;
 			case '"': parse_string(); break;
 			default: {
 				 if (std::isdigit(c)) {
 					 parse_digit();
 				 }else if (std::isalpha(c)) {
-					 parse_keyword();
+					 parse_identifier();
 				 }
 			}; break;
 		}
@@ -71,14 +72,22 @@ void Scanner::parse_digit() {
 	make_token(TokenType::DIGIT, atoi(digit.c_str()));
 }
 
-void Scanner::parse_keyword() {
-	while (std::isalpha(peek())) advance();
-	
-	std::string keyword { m_source.substr(m_start, m_current - m_start) };
+bool Scanner::is_alpha_numeric(char c) {
+    return ('0' <= c && c <= '9')
+                    ||
+           ('a' <= c && c <= 'z')
+                    ||
+                (c == '_');
+}
 
-	if (keywords_map.find(keyword) != keywords_map.end()) {
-		make_token(keywords_map.at(keyword));
+void Scanner::parse_identifier() {
+	while (is_alpha_numeric(peek())) advance();
+	
+	std::string identifier { m_source.substr(m_start, m_current - m_start) };
+
+	if (keywords_map.find(identifier) != keywords_map.end()) {
+		make_token(keywords_map.at(identifier));
 	} else {
-		make_token(TokenType::UKNOWN);
+		make_token(TokenType::IDENTIFIER, identifier);
 	}
 }

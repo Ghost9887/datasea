@@ -5,16 +5,34 @@
 #include <expr.h>
 #include <vector>
 #include <memory>
+#include <optional>
+#include <unordered_map>
 
+enum class ColumnType {
+    VARCHAR,
+    INT,
+    BOOLEAN
+};
+
+inline static std::unordered_map<ColumnType, std::string> column_map = {
+    {ColumnType::VARCHAR, "Varchar"}, {ColumnType::INT, "Int"},
+    {ColumnType::BOOLEAN, "Boolean"}
+};
+
+class RowStmnt;
 class TableStmnt;
 class BlockStmnt;
 class LocaleStmnt;
+class ColumnStmnt;
 
 class StmntVisitor {
 public:
+    virtual void visitRowStmnt(RowStmnt &stmnt) = 0;
 	virtual void visitTableStmnt(TableStmnt &stmnt) = 0;
 	virtual void visitBlockStmnt(BlockStmnt &stmnt) = 0;
     virtual void visitLocaleStmnt(LocaleStmnt &stmnt) = 0;
+    virtual void visitColumnStmnt(ColumnStmnt &stmnt) = 0;
+    virtual ~StmntVisitor() = default;
 };
 
 class Stmnt {
@@ -22,6 +40,16 @@ public:
 	virtual void accept(StmntVisitor &visitory) = 0;
 	virtual std::string to_string() const = 0;
 	virtual ~Stmnt() = default;
+};
+
+class RowStmnt : public Stmnt {
+public:
+    RowStmnt(int count, std::unique_ptr<Stmnt> body);
+    void accept(StmntVisitor &visitor) override;
+    std::string to_string() const override;
+public:
+    int m_count;
+    std::unique_ptr<Stmnt> m_body;
 };
 
 class TableStmnt : public Stmnt {
@@ -36,11 +64,11 @@ public:
 
 class BlockStmnt : public Stmnt {
 public:
-	BlockStmnt(std::vector<std::unique_ptr<Expr>> expressions);
+	BlockStmnt(std::vector<std::unique_ptr<Stmnt>> statemenets);
 	void accept(StmntVisitor &visitor) override;
 	std::string to_string() const override;
 public:
-	std::vector<std::unique_ptr<Expr>> m_expressions;
+	std::vector<std::unique_ptr<Stmnt>> m_statements;
 };
 
 class LocaleStmnt : public Stmnt {
@@ -50,6 +78,17 @@ public:
     std::string to_string() const override;
 public:
     std::string m_locale;
+};
+
+class ColumnStmnt : public Stmnt {
+public:
+	ColumnStmnt(std::string name, ColumnType column_type, std::optional<std::unique_ptr<Expr>> parameter);
+	void accept(StmntVisitor &visitor) override;
+	std::string to_string() const override;
+public:
+	std::string m_name;
+	ColumnType m_column_type;
+    std::optional<std::unique_ptr<Expr>> m_parameter;
 };
 
 #endif
