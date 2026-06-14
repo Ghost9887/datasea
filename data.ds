@@ -1,9 +1,10 @@
-locale("en")
+locale("us")
 
 table("users") {
     column("id", int(0..), increment),
     column("name", varchar, "{first_name} {last_name}"),
     column("email", varchar, "{first_name}.{last_name}@email.com"),
+    column("age", int(18..99)),
     column("sex", varchar, "{sex}"),
     column("alive", boolean),
     count(10)

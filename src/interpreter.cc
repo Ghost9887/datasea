@@ -31,7 +31,7 @@ void Interpreter::visitBlockStmnt(BlockStmnt &stmnt) {
 
 void Interpreter::visitLocaleStmnt(LocaleStmnt &stmnt) {
     std::unordered_map<std::string, std::string> locales = {
-        {"en", "../data/en/"},
+        {"us", "../data/us/"},
     };
     
     if (locales.find(stmnt.m_locale) != 0) {
