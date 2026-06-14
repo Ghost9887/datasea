@@ -19,6 +19,7 @@ private:
     std::string varchar_data(VarcharColumn &column);
     std::string int_data(IntColumn &column);
     std::string boolean_data(BooleanColumn &column);
+    int generate_random_int(int start, int end);
 public:
 	std::string m_table_name {};
 	std::vector<Column> m_columns {};

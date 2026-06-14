@@ -2,6 +2,7 @@
 #include <fstream>
 #include <random>
 #include <climits>
+#include <unordered_map>
 
 void Generator::generate(const std::string output_file_name) {
     std::ofstream output_file("../" + output_file_name);
@@ -58,20 +59,25 @@ std::string Generator::varchar_data(VarcharColumn &column) {
 std::string Generator::int_data(IntColumn &column) {
     if (!column.m_increment) {
         static std::mt19937 rng(std::random_device{}());
-        int max_value = column.m_end.has_value()
-            ? column.m_end.value()
-            : std::numeric_limits<int>::max();
+        int max_value = column.m_end.has_value() ? column.m_end.value() : std::numeric_limits<int>::max();
 
-        std::uniform_int_distribution<int> dist(column.m_start, max_value);
-        return std::to_string(dist(rng));
+        return std::to_string(generate_random_int(column.m_start, max_value));
     }else {
-        static int increment { 0 };
-        return std::to_string(increment++);
+        static std::unordered_map<std::string, int> counters;
+        int &counter = counters[column.m_name];
+        if (counter == 0) counter = column.m_start;
+
+        return std::to_string(counter++);
     }
 }
 
 std::string Generator::boolean_data(BooleanColumn &column) {
+    return generate_random_int(0, 1) == 1 ? "TRUE" : "FALSE";
+}
+
+int Generator::generate_random_int(int start, int end) {
     static std::mt19937 rng(std::random_device{}());
-    std::uniform_int_distribution<int> dist(0, 1);
-    return dist(rng) == 1 ? "TRUE" : "FALSE";
+    std::uniform_int_distribution<int> dist(start, end);
+
+    return dist(rng);
 }
