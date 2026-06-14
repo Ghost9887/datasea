@@ -95,7 +95,39 @@ void Interpreter::visitGenExpr(GenExpr &expr) {
     }
 }
 
-void Interpreter::visitFormatExpr([[maybe_unused]]FormatExpr &expr) {
+void Interpreter::visitFormatExpr(FormatExpr &expr) {
+    for (size_t i {0}; i < expr.m_variables.size(); i++) {
+        evaluate(*expr.m_variables.at(i));
+    }
+
+    switch (expr.m_variables.size()) {
+        case 1:
+            m_column_data.push_back(
+                    std::vformat(expr.m_pattern, 
+                        std::make_format_args(pop())));
+            break;
+        case 2:
+            m_column_data.push_back(
+                    std::vformat(expr.m_pattern, 
+                        std::make_format_args(pop(), pop())));
+            break;
+        case 3:
+            m_column_data.push_back(
+                    std::vformat(expr.m_pattern, 
+                        std::make_format_args(pop(), pop(), pop())));
+            break;
+        case 4:
+            m_column_data.push_back(
+                    std::vformat(expr.m_pattern, 
+                        std::make_format_args(pop(), pop(), pop(), pop())));
+            break;
+        case 5:
+            m_column_data.push_back(
+                    std::vformat(expr.m_pattern, 
+                        std::make_format_args(pop(), pop(), pop(), pop(), pop())));
+            break;
+        deafult: error("Too many variables in foramt");
+    }
 }
 
 void Interpreter::execute(Stmnt &stmnt) {
@@ -104,6 +136,12 @@ void Interpreter::execute(Stmnt &stmnt) {
 
 void Interpreter::evaluate(Expr &expr) {
     expr.accept(*this);
+}
+
+const std::string Interpreter::pop() {
+    std::string value { m_column_data.back() };
+    m_column_data.pop_back();
+    return value;
 }
 
 int Interpreter::generate_random_int(int start, int end) {
@@ -124,7 +162,7 @@ std::string Interpreter::cache_data(CachedData &cached_data, std::string &&file_
 
     std::string line {};
     while(std::getline(data_file, line)) {
-        data.push_back(std::format("'{}'", line));
+        data.push_back(std::format("{}", line));
     }
 
     data_file.close();

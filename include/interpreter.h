@@ -26,6 +26,7 @@ private:
     void visitFormatExpr(FormatExpr &expr) override;
     void execute(Stmnt &stmnt);
     void evaluate(Expr &expr);
+    const std::string pop();
     int generate_random_int(int start, int end);
     std::string cache_data(CachedData &cached_data, std::string &&file_name, TokenType type);
     std::string build_query(const std::string &table_name);
