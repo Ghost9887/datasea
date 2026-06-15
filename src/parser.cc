@@ -185,9 +185,9 @@ std::unique_ptr<Expr> Parser::parse_value() {
 std::unique_ptr<Expr> Parser::parse_variable() {
     consume(TokenType::IDENTIFIER, "Expected variable name.");
     std::string variable_name { std::get<std::string>(previous().m_value.m_data) };
-    if (match(TokenType::LPAREN)) {
+    if (match(TokenType::LBRACKET)) {
         std::unique_ptr<Expr> expr { expression() };
-        consume(TokenType::RPAREN, "Expected ')'.");
+        consume(TokenType::RBRACKET, "Expected ']'.");
         return std::make_unique<VariableExpr>(std::move(variable_name), std::move(expr));
     }
     return std::make_unique<VariableExpr>(std::move(variable_name), std::nullopt);
