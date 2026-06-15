@@ -48,19 +48,37 @@ std::string FormatExpr::to_string() const {
 }
 
 ValueExpr::ValueExpr(Value value) :
-    m_value(value) {}
+    m_value(std::move(value)) {}
 void ValueExpr::accept(ExprVisitor &visitor) {
     visitor.visitValueExpr(*this);
 }
 std::string ValueExpr::to_string() const {
-    return std::format("ValueExpr[{}]", Token::value_to_string(m_value));
+    return std::format("ValueExpr[{}]", value_to_string(m_value));
 }
 
-VariableExpr::VariableExpr(std::string name) :
-    m_name(name) {}
+VariableExpr::VariableExpr(std::string name, std::optional<std::unique_ptr<Expr>> expr) :
+    m_name(name), m_expr(std::move(expr)) {}
 void VariableExpr::accept(ExprVisitor &visitor) {
     visitor.visitVariableExpr(*this);
 }
 std::string VariableExpr::to_string() const {
+    if (m_expr.has_value()) {
+        return std::format("VariableExpr[{}, {}]", m_name, m_expr.value()->to_string());
+    }
     return std::format("VariableExpr[{}]", m_name);
+}
+
+ListExpr::ListExpr(std::vector<std::unique_ptr<Expr>> expressions) :
+    m_expressions(std::move(expressions)) {}
+void ListExpr::accept(ExprVisitor &visitor) {
+    visitor.visitListExpr(*this);
+}
+std::string ListExpr::to_string() const {
+    std::string res { "ListExpr[" };
+    for (size_t i {0}; i < m_expressions.size(); i++) {
+        res += m_expressions.at(i)->to_string();
+        res += ", ";
+    }
+    res += "]";
+    return res;
 }

@@ -28,9 +28,11 @@ private:
     void visitFormatExpr(FormatExpr &expr) override;
     void visitValueExpr(ValueExpr &expr) override;
     void visitVariableExpr(VariableExpr &expr) override;
+    void visitListExpr(ListExpr &expr) override;
     void execute(Stmnt &stmnt);
     void evaluate(Expr &expr);
-    const std::string pop();
+    const Value pop();
+    const std::string pop_as_str();
     int generate_random_int(int start, int end);
     std::string cache_data(CachedData &cached_data, std::string &&file_name, TokenType type);
     std::string build_query(const std::string &table_name);

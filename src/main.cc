@@ -45,7 +45,7 @@ int main(int argc, char **argv) {
 	Scanner scanner { std::move(source) };
 	std::vector<Token> tokens { scanner.tokenize() };
 
-    /*
+    /*   
     for (Token &token : tokens) {
         std::cout << token.to_string() << std::endl;
     }
@@ -54,7 +54,7 @@ int main(int argc, char **argv) {
 	Parser parser { tokens };
 	std::vector<std::unique_ptr<Stmnt>> statements { parser.parse() };
 
-    /*
+    /*   
     for (size_t i { 0 }; i < statements.size(); i++) {
         std::cout << statements.at(i)->to_string() << std::endl;;
     }

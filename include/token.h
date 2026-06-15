@@ -4,15 +4,17 @@
 #include <common.h>
 #include <variant>
 #include <unordered_map>
+#include <value.h>
 
 enum class TokenType {
 	LPAREN, RPAREN,
 	LBRACE, RBRACE,
 	DOT, DOUBLE_DOT, COMMA,
     SEMICOLON, DOLLAR,
-    EQUAL,
+    EQUAL, RBRACKET, LBRACKET,
+    MINUS,
 
-	STRING, DIGIT, BOOL, IDENTIFIER,
+	STRING, INT, DOUBLE, BOOL, IDENTIFIER,
     _NULL,
 
 	TABLE, COLUMN, COUNT,
@@ -29,10 +31,12 @@ inline static const std::unordered_map<TokenType, std::string> tokens_map = {
 	{TokenType::DOT, "Dot"}, {TokenType::DOUBLE_DOT, "Double_Dot"},
 	{TokenType::COMMA, "Comma"}, {TokenType::SEMICOLON, "Semicolon"}, 
     {TokenType::DOLLAR, "Dollar"}, {TokenType::EQUAL, "Equal"},
+    {TokenType::LBRACKET, "LBracket"}, {TokenType::RBRACKET, "RBracket"},
+    {TokenType::MINUS, "Minus"},
 
-	{TokenType::STRING, "String"}, {TokenType::DIGIT, "Digit"},
-	{TokenType::BOOL, "Bool"}, {TokenType::IDENTIFIER, "Identifier"},
-    {TokenType::_NULL, "Null"},
+	{TokenType::STRING, "String"}, {TokenType::INT, "Int"},
+    {TokenType::DOUBLE, "Double"}, {TokenType::BOOL, "Bool"}, 
+    {TokenType::IDENTIFIER, "Identifier"}, {TokenType::_NULL, "Null"},
 
 	{TokenType::TABLE, "Table"}, {TokenType::COLUMN, "Column"},
 	{TokenType::COUNT, "Count"}, {TokenType::INCREMENT, "Increment"},
@@ -55,13 +59,11 @@ inline static const std::unordered_map<std::string, TokenType> keywords_map = {
     {"lastname", TokenType::LAST_NAME}, {"sex", TokenType::SEX}, {"print", TokenType::PRINT},
 };
 
-using Value = std::variant<std::monostate, int, std::string, bool>;
-
 class Token {
 public:
 	Token(TokenType type, Value value, size_t line, size_t column);
 	std::string to_string() const;
-	static std::string value_to_string(const Value &value);
+	
 	~Token() = default;
 public:
 	TokenType m_type;

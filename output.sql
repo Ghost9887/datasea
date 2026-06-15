@@ -1,10 +1,4 @@
-INSERT INTO users (id, first_name, last_name, email, age) VALUES (0, 'Joseph', 'Young', 'Joseph.Young@email.com', 64);
-INSERT INTO users (id, first_name, last_name, email, age) VALUES (1, 'Patricia', 'Jones', 'Patricia.Jones@email.com', 76);
-INSERT INTO users (id, first_name, last_name, email, age) VALUES (2, 'David', 'Allen', 'David.Allen@email.com', 21);
-INSERT INTO users (id, first_name, last_name, email, age) VALUES (3, 'Timothy', 'Garcia', 'Timothy.Garcia@email.com', 71);
-INSERT INTO users (id, first_name, last_name, email, age) VALUES (4, 'Ashley', 'Robinson', 'Ashley.Robinson@email.com', 84);
-INSERT INTO users (id, first_name, last_name, email, age) VALUES (5, 'Lisa', 'White', 'Lisa.White@email.com', 77);
-INSERT INTO users (id, first_name, last_name, email, age) VALUES (6, 'Sarah', 'Anderson', 'Sarah.Anderson@email.com', 69);
-INSERT INTO users (id, first_name, last_name, email, age) VALUES (7, 'Nicholas', 'Thompson', 'Nicholas.Thompson@email.com', 74);
-INSERT INTO users (id, first_name, last_name, email, age) VALUES (8, 'Stephen', 'Martin', 'Stephen.Martin@email.com', 35);
-INSERT INTO users (id, first_name, last_name, email, age) VALUES (9, 'Thomas', 'Wright', 'Thomas.Wright@email.com', 42);
+INSERT INTO users (id, first_name, last_name, full_name, test) VALUES (0, 'Shirley', 'Wright', 'Shirley Wright', 'this');
+INSERT INTO users (id, first_name, last_name, full_name, test) VALUES (1, 'Joshua', 'Hernandez', 'Joshua Hernandez', 'is');
+INSERT INTO users (id, first_name, last_name, full_name, test) VALUES (2, 'Kevin', 'Perez', 'Kevin Perez', 'a');
+INSERT INTO users (id, first_name, last_name, full_name, test) VALUES (3, 'Ryan', 'Brown', 'Ryan Brown', 'test');

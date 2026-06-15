@@ -13,8 +13,11 @@ std::vector<Token> Scanner::tokenize() {
 			case ')': make_token(TokenType::RPAREN); break;
 			case '{': make_token(TokenType::LBRACE); break;
 			case '}': make_token(TokenType::RBRACE); break;
+            case '[': make_token(TokenType::LBRACKET); break;
+            case ']': make_token(TokenType::RBRACKET); break;
             case '$': make_token(TokenType::DOLLAR); break;
             case '=': make_token(TokenType::EQUAL); break;
+            case '-': parse_digit(); break;
 			case '.': {
 				if (peek() == '.') {
 					make_token(TokenType::DOUBLE_DOT);
@@ -52,26 +55,43 @@ char Scanner::peek() {
 }
 
 void Scanner::make_token(TokenType type) {
-	m_tokens.emplace_back(Token(type, std::monostate(), m_line, m_column));
+	m_tokens.emplace_back(Token(type, Value{ std::monostate() }, m_line, m_column));
 }
 
 void Scanner::make_token(TokenType type, Value value) {
-	m_tokens.emplace_back(Token(type, value, m_line, m_column));
+	m_tokens.emplace_back(Token(type, std::move(value), m_line, m_column));
 }
 
 void Scanner::parse_string() {
 	m_start = m_current;
 	while (in_bounds() && peek() != '"') advance();
-	make_token(TokenType::STRING, m_source.substr(m_start, m_current - m_start));
+	make_token(TokenType::STRING, Value{ m_source.substr(m_start, m_current - m_start) });
 	advance();
 }
 
 void Scanner::parse_digit() {
+    bool is_double { false };
 	while(std::isdigit(peek())) {
 		advance();
 	}
+    
+    /*
+    if (peek() == '.') {
+        is_double = true;
+        advance();
+        while(std::isdigit(peek())) {
+		   advance();
+	    }
+    }
+    */
+
 	std::string digit { m_source.substr(m_start, m_current - m_start) };
-	make_token(TokenType::DIGIT, atoi(digit.c_str()));
+
+    if (is_double) {
+	    make_token(TokenType::DOUBLE, Value{ stod(digit) });
+        return;
+    }
+    make_token(TokenType::INT, Value{ stoi(digit) });
 }
 
 bool Scanner::is_alpha_numeric(char c) {
@@ -87,12 +107,12 @@ void Scanner::parse_identifier() {
 	
 	std::string identifier { m_source.substr(m_start, m_current - m_start) };
 
-    if (identifier == "null") make_token(TokenType::_NULL, std::monostate());
-    else if (identifier == "true") make_token(TokenType::BOOL, true);
-    else if (identifier == "false") make_token(TokenType::BOOL, false);
+    if (identifier == "null") make_token(TokenType::_NULL, Value{ std::monostate() });
+    else if (identifier == "true") make_token(TokenType::BOOL, Value{ true });
+    else if (identifier == "false") make_token(TokenType::BOOL, Value {false});
     else if (keywords_map.find(identifier) != keywords_map.end()) {
 		make_token(keywords_map.at(identifier));
 	} else {
-		make_token(TokenType::IDENTIFIER, identifier);
+		make_token(TokenType::IDENTIFIER, Value{ identifier });
 	}
 }

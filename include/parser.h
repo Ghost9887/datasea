@@ -28,6 +28,7 @@ private:
     std::unique_ptr<Expr> parse_format();
     std::unique_ptr<Expr> parse_value();
     std::unique_ptr<Expr> parse_variable();
+    std::unique_ptr<Expr> parse_list();
 	template<typename... TokenTypes>
 	bool match(TokenTypes... types);
 	std::optional<std::reference_wrapper<Token>> peek();

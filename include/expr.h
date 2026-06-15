@@ -12,6 +12,7 @@ class GenExpr;
 class FormatExpr;
 class ValueExpr;
 class VariableExpr;
+class ListExpr;
 
 class ExprVisitor {
 public:
@@ -21,6 +22,7 @@ public:
     virtual void visitFormatExpr(FormatExpr &expr) = 0;
     virtual void visitValueExpr(ValueExpr &expr) = 0;
     virtual void visitVariableExpr(VariableExpr &expr) = 0;
+    virtual void visitListExpr(ListExpr &expr) = 0;
 	virtual ~ExprVisitor() = default;
 };
 
@@ -82,11 +84,21 @@ public:
 
 class VariableExpr : public Expr {
 public:
-    VariableExpr(std::string name);
+    VariableExpr(std::string name, std::optional<std::unique_ptr<Expr>> expr);
     void accept(ExprVisitor &visitor) override;
     std::string to_string() const override;
 public:
     std::string m_name;
+    std::optional<std::unique_ptr<Expr>> m_expr;
+};
+
+class ListExpr : public Expr {
+public:
+    ListExpr(std::vector<std::unique_ptr<Expr>> expressions);
+    void accept(ExprVisitor &visitor) override;
+    std::string to_string() const override;
+public:
+    std::vector<std::unique_ptr<Expr>> m_expressions;
 };
 
 #endif

@@ -67,7 +67,7 @@ void Interpreter::visitDeclStmnt(DeclStmnt &stmnt) {
 
 void Interpreter::visitPrintStmnt(PrintStmnt &stmnt) {
     evaluate(*stmnt.m_expr);
-    std::cout << Token::value_to_string(pop()) << std::endl;
+    std::cout << value_to_string(pop()) << std::endl;
 }
 
 void Interpreter::visitIncrementExpr(IncrementExpr &expr) {
@@ -78,13 +78,14 @@ void Interpreter::visitIncrementExpr(IncrementExpr &expr) {
         }
     }
 
-    m_column_data.push_back(expr.m_counter++);
+    m_column_data.push_back(Value{ expr.m_counter++ });
 }
 
 void Interpreter::visitRandomExpr(RandomExpr &expr) {
     int max = expr.m_end.has_value() ? expr.m_end.value() : std::numeric_limits<int>::max();
 
-    m_column_data.push_back(generate_random_int(expr.m_start, max)); 
+    
+    m_column_data.push_back(Value{ generate_random_int(expr.m_start, max) }); 
 }
 
 void Interpreter::visitGenExpr(GenExpr &expr) {
@@ -96,20 +97,20 @@ void Interpreter::visitGenExpr(GenExpr &expr) {
     
     if (cached_data.find(expr.m_type) != cached_data.end()) {
         std::vector<std::string> &data { cached_data.at(expr.m_type) }; 
-        m_column_data.push_back(data.at(generate_random_int(0, data.size() - 1)));
+        m_column_data.push_back(Value{ data.at(generate_random_int(0, data.size() - 1)) });
     }else {
         switch(expr.m_type) {
             case TokenType::FIRST_NAME: {
-                m_column_data.push_back(cache_data(cached_data, "first_name", TokenType::FIRST_NAME));
+                m_column_data.push_back(Value{ cache_data(cached_data, "first_name", TokenType::FIRST_NAME) });
             };break;
             case TokenType::LAST_NAME: { 
-                m_column_data.push_back(cache_data(cached_data, "last_name", TokenType::LAST_NAME));
+                m_column_data.push_back(Value{ cache_data(cached_data, "last_name", TokenType::LAST_NAME) });
             };break;
             case TokenType::SEX: {
-                m_column_data.push_back(cache_data(cached_data, "sex", TokenType::SEX));
+                m_column_data.push_back(Value{ cache_data(cached_data, "sex", TokenType::SEX) });
             };break;
             case TokenType::BOOL: {
-                m_column_data.push_back(generate_random_int(0, 1) == 0 ? "FALSE" : "TRUE"); 
+                m_column_data.push_back(Value{ generate_random_int(0, 1) == 0 ? "FALSE" : "TRUE" }); 
             }; break;
             default:  
                 //should be unreachable
@@ -120,7 +121,7 @@ void Interpreter::visitGenExpr(GenExpr &expr) {
 
 void Interpreter::visitFormatExpr(FormatExpr &expr) {
     if (expr.m_variables.empty()) {
-        m_column_data.push_back(expr.m_pattern);
+        m_column_data.push_back(Value{ expr.m_pattern });
         return;
     }
 
@@ -131,28 +132,38 @@ void Interpreter::visitFormatExpr(FormatExpr &expr) {
     switch (expr.m_variables.size()) {
         case 1: {
             m_column_data.push_back(
+                Value {
                     std::vformat(expr.m_pattern, 
-                        std::make_format_args(pop())));
+                        std::make_format_args(pop_as_str()))
+                });
         };break;
         case 2: {
             m_column_data.push_back(
+                Value {
                     std::vformat(expr.m_pattern, 
-                        std::make_format_args(pop(), pop())));
+                        std::make_format_args(pop_as_str(), pop_as_str()))
+                });
         };break;
         case 3: {
             m_column_data.push_back(
+                Value {
                     std::vformat(expr.m_pattern, 
-                        std::make_format_args(pop(), pop(), pop())));
+                        std::make_format_args(pop_as_str(), pop_as_str(), pop_as_str()))
+                });
         };break;
         case 4: {
             m_column_data.push_back(
+                Value {
                     std::vformat(expr.m_pattern, 
-                        std::make_format_args(pop(), pop(), pop(), pop())));
+                        std::make_format_args(pop_as_str(), pop_as_str(), pop_as_str(), pop_as_str()))
+                });
         };break;
         case 5: {
             m_column_data.push_back(
+                Value {
                     std::vformat(expr.m_pattern, 
-                        std::make_format_args(pop(), pop(), pop(), pop(), pop())));
+                        std::make_format_args(pop_as_str(), pop_as_str(), pop_as_str(), pop_as_str(), pop_as_str()))
+                    });
         };break;
         //should be unreachable
         default: error("Too many format args: max is 5");
@@ -165,10 +176,37 @@ void Interpreter::visitValueExpr(ValueExpr &expr) {
 
 void Interpreter::visitVariableExpr(VariableExpr &expr) {
     if (m_variables.find(expr.m_name) != m_variables.end()) {
-        m_column_data.push_back(m_variables.at(expr.m_name));
-        return;
+        if (expr.m_expr.has_value()) {
+            evaluate(*expr.m_expr.value());
+            Value value { pop() };
+            if (std::holds_alternative<int>(value.m_data)) {
+                int index = std::get<int>(value.m_data);
+                if (std::holds_alternative<std::vector<Value>>(m_variables.at(expr.m_name).m_data)) {
+                    std::vector<Value> array { std::get<std::vector<Value>>(m_variables.at(expr.m_name).m_data) };
+                    if (index < static_cast<int>(array.size())) {
+                        if (index > -1) {
+                            m_column_data.push_back(array.at(index));
+                            return;
+                        }else error("Index cannot be lower than 0");
+                    }else error(std::format("Index out of bounds: {} > {}", std::to_string(index), std::to_string(array.size() - 1)));
+                }else error("Cannot index into a non list type.");
+            }else error("Index must be int.");
+        }else {
+            m_column_data.push_back(m_variables.at(expr.m_name));
+            return;
+        }
     }
+
     error(std::format("Variable '{}' does not exist", expr.m_name)); 
+}
+
+void Interpreter::visitListExpr(ListExpr &expr) {
+    std::vector<Value> values {};
+    for (size_t i {0}; i < expr.m_expressions.size(); i++) {
+        evaluate(*expr.m_expressions.at(i));
+        values.push_back(pop());
+    }
+    m_column_data.push_back(Value{ std::move(values) });
 }
 
 void Interpreter::execute(Stmnt &stmnt) {
@@ -179,10 +217,14 @@ void Interpreter::evaluate(Expr &expr) {
     expr.accept(*this);
 }
 
-const std::string Interpreter::pop() {
-    std::string value { Token::value_to_string(m_column_data.back()) };
+const Value Interpreter::pop() {
+    Value value { m_column_data.back() };
     m_column_data.pop_back();
     return value;
+}
+
+const std::string Interpreter::pop_as_str() {
+    return value_to_string(pop());
 }
 
 int Interpreter::generate_random_int(int start, int end) {
@@ -219,7 +261,7 @@ std::string Interpreter::build_query(const std::string &table_name) {
     }
     query += ") VALUES (";
     for (size_t i {0}; i < m_column_data.size(); i++) {
-        query += Token::value_to_string(m_column_data.at(i));
+        query += value_to_string(m_column_data.at(i));
         if (i + 1 < m_column_data.size()) query += ", ";
     }
     query += ");\n";

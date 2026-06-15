@@ -1,6 +1,10 @@
 locale("us");
 
-rows(10) {
+$custom = ["this", "is", "a", "test"];
+
+rows(4) {
+    $index = increment(0..4);
+
     $first_name = gen(firstname);
     $last_name = gen(lastname);
 
@@ -8,7 +12,7 @@ rows(10) {
         column("id", increment(0..));
         column("first_name", format("'{}'", $first_name));
         column("last_name", format("'{}'", $last_name));
-        column("email", format("'{}.{}@email.com'", $first_name, $last_name));
-        column("age", random(18..99));
+        column("full_name", format("'{} {}'", $first_name, $last_name));
+        column("test", format("'{}'", $custom($index)));
     }
 }

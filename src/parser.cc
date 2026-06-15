@@ -30,8 +30,8 @@ std::unique_ptr<Stmnt> Parser::statement() {
 
 std::unique_ptr<Stmnt> Parser::parse_rows() {
 	consume(TokenType::LPAREN, "Expected '('.");
-	consume(TokenType::DIGIT, "Expected 'count'.");
-	int count { std::get<int>(previous().m_value) };
+	consume(TokenType::INT, "Expected 'count'.");
+	int count { std::get<int>(previous().m_value.m_data) };
 	consume(TokenType::RPAREN, "Expected ')'.");
     std::unique_ptr<Stmnt> body { statement() };
 	return std::make_unique<RowStmnt>(count, std::move(body));
@@ -40,7 +40,7 @@ std::unique_ptr<Stmnt> Parser::parse_rows() {
 std::unique_ptr<Stmnt> Parser::parse_table() {
 	consume(TokenType::LPAREN, "Expected '('.");
 	consume(TokenType::STRING, "Expected 'table_name'.");
-	std::string table_name = std::get<std::string>(previous().m_value);
+	std::string table_name = std::get<std::string>(previous().m_value.m_data);
 	consume(TokenType::RPAREN, "Expected ')'.");
 	std::unique_ptr<Stmnt> table_body { statement() };
 	return std::make_unique<TableStmnt>(table_name, std::move(table_body));
@@ -64,7 +64,7 @@ std::unique_ptr<Stmnt> Parser::parse_block() {
 std::unique_ptr<Stmnt> Parser::parse_locale() {
     consume(TokenType::LPAREN, "Expected '('.");
     consume(TokenType::STRING, "Expected 'locale_value'.");
-    std::string locale { std::get<std::string>(previous().m_value) };
+    std::string locale { std::get<std::string>(previous().m_value.m_data) };
     consume(TokenType::RPAREN, "Expected ')'.");
     consume(TokenType::SEMICOLON, "Expected ';'.");
     return std::make_unique<LocaleStmnt>(std::move(locale));
@@ -73,7 +73,7 @@ std::unique_ptr<Stmnt> Parser::parse_locale() {
 std::unique_ptr<Stmnt> Parser::parse_column() {
 	consume(TokenType::LPAREN, "Expected '('.");
 	consume(TokenType::STRING, "Expected 'column_name'.");
-	std::string column_name { std::get<std::string>(previous().m_value) };
+	std::string column_name { std::get<std::string>(previous().m_value.m_data) };
     consume(TokenType::COMMA, "Expected ','.");
     std::unique_ptr<Expr> parameter { expression() };  
 	consume(TokenType::RPAREN, "Expected ')'.");
@@ -83,14 +83,15 @@ std::unique_ptr<Stmnt> Parser::parse_column() {
 
 std::unique_ptr<Stmnt> Parser::parse_decl() {
     consume(TokenType::IDENTIFIER, "Expected 'variable_name'");
-    std::string name { std::get<std::string>(previous().m_value) };
+    std::string name { std::get<std::string>(previous().m_value.m_data) };
     if (match(TokenType::EQUAL)) {
         std::unique_ptr<Expr> expr { expression() };
         consume(TokenType::SEMICOLON, "Expected ';'.");
         return std::make_unique<DeclStmnt>(name, std::move(expr));
     }
     consume(TokenType::SEMICOLON, "Exptected ';'.");
-    return std::make_unique<DeclStmnt>(name, std::make_unique<ValueExpr>(std::monostate()));
+    Value value { std::monostate() };
+    return std::make_unique<DeclStmnt>(name, std::make_unique<ValueExpr>(std::move(value)));
 }
 
 std::unique_ptr<Stmnt> Parser::parse_print() {
@@ -107,17 +108,18 @@ std::unique_ptr<Expr> Parser::expression() {
     else if (match(TokenType::GEN)) return parse_gen();
     else if (match(TokenType::FORMAT)) return parse_format();
     else if (match(TokenType::DOLLAR)) return parse_variable();
+    else if (match(TokenType::LBRACKET)) return parse_list();
     else return parse_value();
 }
 
 std::unique_ptr<Expr> Parser::parse_increment() {
     consume(TokenType::LPAREN, "Expected '('.");
-    consume(TokenType::DIGIT, "Expected 'start'.");
-    int start { std::get<int>(previous().m_value) };
+    consume(TokenType::INT, "Expected 'increment_start'.");
+    int start { std::get<int>(previous().m_value.m_data) };
     consume(TokenType::DOUBLE_DOT, "Expected '..'.");
     std::optional<int> end { std::nullopt };
-    if (match(TokenType::DIGIT)) {
-        end = std::get<int>(previous().m_value);
+    if (match(TokenType::INT)) {
+        end = std::get<int>(previous().m_value.m_data);
     }
     consume(TokenType::RPAREN, "Expected ')'.");
     return std::make_unique<IncrementExpr>(start, end);
@@ -125,12 +127,12 @@ std::unique_ptr<Expr> Parser::parse_increment() {
 
 std::unique_ptr<Expr> Parser::parse_random() {
     consume(TokenType::LPAREN, "Expected '('.");
-    consume(TokenType::DIGIT, "Expected 'start'.");
-    int start { std::get<int>(previous().m_value) };
+    consume(TokenType::INT, "Expected 'start'.");
+    int start { std::get<int>(previous().m_value.m_data) };
     consume(TokenType::DOUBLE_DOT, "Expected '..'.");
     std::optional<int> end { std::nullopt };
-    if (match(TokenType::DIGIT)) {
-        end = std::get<int>(previous().m_value);
+    if (match(TokenType::INT)) {
+        end = std::get<int>(previous().m_value.m_data);
     }
     consume(TokenType::RPAREN, "Expected ')'.");
     return std::make_unique<RandomExpr>(start, end);
@@ -153,7 +155,7 @@ std::unique_ptr<Expr> Parser::parse_format() {
 
     consume(TokenType::LPAREN, "Expected '('.");
     consume(TokenType::STRING, "Expected pattern'.");
-    std::string pattern { std::get<std::string>(previous().m_value) };
+    std::string pattern { std::get<std::string>(previous().m_value.m_data) };
     std::vector<std::unique_ptr<Expr>> variables {};
     if(match(TokenType::COMMA)) {
         while (true) {
@@ -172,16 +174,37 @@ std::unique_ptr<Expr> Parser::parse_format() {
 }
 
 std::unique_ptr<Expr> Parser::parse_value() {
-    if (match(TokenType::STRING, TokenType::DIGIT, TokenType::BOOL, TokenType::_NULL)) {
-        return std::make_unique<ValueExpr>(previous().m_value);
+    if (match(TokenType::STRING, TokenType::INT, TokenType::BOOL, TokenType::_NULL)) {
+        Value value { previous().m_value.m_data };
+        return std::make_unique<ValueExpr>(std::move(value));
     }
 
-    error("Expected expression.");
+    error("Expected value.");
 }
 
 std::unique_ptr<Expr> Parser::parse_variable() {
     consume(TokenType::IDENTIFIER, "Expected variable name.");
-    return std::make_unique<VariableExpr>(std::get<std::string>(previous().m_value));
+    std::string variable_name { std::get<std::string>(previous().m_value.m_data) };
+    if (match(TokenType::LPAREN)) {
+        std::unique_ptr<Expr> expr { expression() };
+        consume(TokenType::RPAREN, "Expected ')'.");
+        return std::make_unique<VariableExpr>(std::move(variable_name), std::move(expr));
+    }
+    return std::make_unique<VariableExpr>(std::move(variable_name), std::nullopt);
+}
+
+std::unique_ptr<Expr> Parser::parse_list() {
+    constexpr size_t MAX_ARRAY_SIZE { 256 };
+    size_t counter {0};
+    std::vector<std::unique_ptr<Expr>> expressions {};
+    while (true) {
+        if (match(TokenType::RBRACKET)) break;
+        if (counter > 0) consume(TokenType::COMMA, "Expected ','.");
+        if (counter >= MAX_ARRAY_SIZE) error("Too many values in array: [max is 256].");
+        expressions.push_back(expression());
+        counter++;
+    }
+    return std::make_unique<ListExpr>(std::move(expressions));
 }
 
 template<typename... TokenTypes>
