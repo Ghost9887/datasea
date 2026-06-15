@@ -1,6 +1,7 @@
 #include <interpreter.h>
 #include <random>
 #include <climits>
+#include <unordered_set>
 
 Interpreter::Interpreter(std::string output_name, std::vector<std::unique_ptr<Stmnt>> statements) :
     m_output_file("../" + output_name), m_statements(std::move(statements)) {}
@@ -38,7 +39,15 @@ void Interpreter::visitBlockStmnt(BlockStmnt &stmnt) {
 }
 
 void Interpreter::visitLocaleStmnt(LocaleStmnt &stmnt) {
-    m_locale = std::format("../data/{}/", stmnt.m_locale);
+    static std::unordered_set<std::string> locales_set = {
+        "us"
+    };
+
+    if (locales_set.find(stmnt.m_locale) != locales_set.end()) {
+        m_locale = std::format("../data/{}/", stmnt.m_locale);
+    }else {
+        error(std::format("Locale '{}' does not exist", stmnt.m_locale));
+    }
 }
 
 void Interpreter::visitColumnStmnt(ColumnStmnt &stmnt) {
