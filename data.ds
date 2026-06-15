@@ -1,13 +1,14 @@
 locale("us");
 
 rows(10) {
+    $first_name = gen(firstname);
+    $last_name = gen(lastname);
+
     table("users") {
-        column("id", int, increment(0..));
-        column("username", varchar, format("{}@{}_{}", gen(firstname), gen(lastname), random(0..999)));
-        column("first_name", varchar, gen(firstname));
-        column("last_name", varchar, gen(lastname));
-        column("age", int, random(18..99));
-        column("sex", varchar, gen(sex));
-        column("alive", boolean, gen(boolean));
+        column("id", increment(0..));
+        column("first_name", format("'{}'", $first_name));
+        column("last_name", format("'{}'", $last_name));
+        column("email", format("'{}.{}@email.com'", $first_name, $last_name));
+        column("age", random(18..99));
     }
 }

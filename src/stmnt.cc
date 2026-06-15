@@ -42,14 +42,29 @@ std::string LocaleStmnt::to_string() const {
     return std::format("LocaleStmnt[{}]", m_locale);
 }
 
-ColumnStmnt::ColumnStmnt(std::string name, ColumnType column_type, std::optional<std::unique_ptr<Expr>> parameter) :
-	m_name(std::move(name)), m_column_type(column_type), m_parameter(std::move(parameter)) {}
+ColumnStmnt::ColumnStmnt(std::string name, std::unique_ptr<Expr> parameter) :
+	m_name(std::move(name)), m_parameter(std::move(parameter)) {}
 void ColumnStmnt::accept(StmntVisitor &visitor) {
 	visitor.visitColumnStmnt(*this);
 }
 std::string ColumnStmnt::to_string() const {
-    if (m_parameter.has_value()) {
-        return std::format("ColumnExpr[{}, {}, {}]", m_name, column_map.at(m_column_type), m_parameter.value()->to_string());
-    }
-    return std::format("ColumnExpr[{}, {}]", m_name, column_map.at(m_column_type));
+    return std::format("ColumnStmnt[{}, {}]", m_name, m_parameter->to_string());
+}
+
+DeclStmnt::DeclStmnt(std::string name, std::unique_ptr<Expr> expr) :
+    m_name(name), m_expr(std::move(expr)) {}
+void DeclStmnt::accept(StmntVisitor &visitor) {
+    visitor.visitDeclStmnt(*this);
+}
+std::string DeclStmnt::to_string() const {
+    return std::format("DeclStmnt[{}, {}]", m_name, m_expr->to_string());
+}
+
+PrintStmnt::PrintStmnt(std::unique_ptr<Expr> expr) :
+    m_expr(std::move(expr)) {}
+void PrintStmnt::accept(StmntVisitor &visitor) {
+    visitor.visitPrintStmnt(*this);
+}
+std::string PrintStmnt::to_string() const {
+    return std::format("PrintStmnt[{}]", m_expr->to_string());
 }

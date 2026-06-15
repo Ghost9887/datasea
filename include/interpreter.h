@@ -20,10 +20,14 @@ private:
 	void visitBlockStmnt(BlockStmnt &stmnt) override;
     void visitLocaleStmnt(LocaleStmnt &stmnt) override;
     void visitColumnStmnt(ColumnStmnt &stmnt) override;
+    void visitDeclStmnt(DeclStmnt &stmnt) override;
+    void visitPrintStmnt(PrintStmnt &stmnt) override;
     void visitIncrementExpr(IncrementExpr &expr) override;
     void visitRandomExpr(RandomExpr &expr) override;
     void visitGenExpr(GenExpr &expr) override;
     void visitFormatExpr(FormatExpr &expr) override;
+    void visitValueExpr(ValueExpr &expr) override;
+    void visitVariableExpr(VariableExpr &expr) override;
     void execute(Stmnt &stmnt);
     void evaluate(Expr &expr);
     const std::string pop();
@@ -38,7 +42,8 @@ private:
     std::vector<std::unique_ptr<Stmnt>> m_statements;
     std::string m_locale {};
     std::vector<std::string> m_column_names {};
-    std::vector<std::string> m_column_data {};
+    std::vector<Value> m_column_data {};
+    std::unordered_map<std::string, Value> m_variables {};
 };
 
 #endif

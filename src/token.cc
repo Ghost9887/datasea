@@ -13,11 +13,11 @@ std::string Token::value_to_string(const Value &value) {
         if constexpr (std::is_same_v<T, std::string>) {
             return arg;
         }else if constexpr (std::is_same_v<T, bool>) {
-            return arg ? "true" : "false";
+            return arg ? "TRUE" : "FALSE";
         }else if constexpr (std::is_arithmetic_v<T>) {
             return std::to_string(arg);
         }else {
-            return "empty";
+            return "NULL";
         }
     }, value);
 }

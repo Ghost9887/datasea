@@ -10,6 +10,8 @@ class IncrementExpr;
 class RandomExpr;
 class GenExpr;
 class FormatExpr;
+class ValueExpr;
+class VariableExpr;
 
 class ExprVisitor {
 public:
@@ -17,6 +19,8 @@ public:
     virtual void visitRandomExpr(RandomExpr &expr) = 0;
     virtual void visitGenExpr(GenExpr &expr) = 0;
     virtual void visitFormatExpr(FormatExpr &expr) = 0;
+    virtual void visitValueExpr(ValueExpr &expr) = 0;
+    virtual void visitVariableExpr(VariableExpr &expr) = 0;
 	virtual ~ExprVisitor() = default;
 };
 
@@ -65,6 +69,24 @@ public:
 public:
     std::string m_pattern;
     std::vector<std::unique_ptr<Expr>> m_variables;
+};
+
+class ValueExpr : public Expr {
+public:
+    ValueExpr(Value value);
+    void accept(ExprVisitor &visitor) override;
+    std::string to_string() const override;
+public:
+    Value m_value;
+};
+
+class VariableExpr : public Expr {
+public:
+    VariableExpr(std::string name);
+    void accept(ExprVisitor &visitor) override;
+    std::string to_string() const override;
+public:
+    std::string m_name;
 };
 
 #endif

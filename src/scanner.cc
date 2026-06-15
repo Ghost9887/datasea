@@ -13,6 +13,8 @@ std::vector<Token> Scanner::tokenize() {
 			case ')': make_token(TokenType::RPAREN); break;
 			case '{': make_token(TokenType::LBRACE); break;
 			case '}': make_token(TokenType::RBRACE); break;
+            case '$': make_token(TokenType::DOLLAR); break;
+            case '=': make_token(TokenType::EQUAL); break;
 			case '.': {
 				if (peek() == '.') {
 					make_token(TokenType::DOUBLE_DOT);
@@ -85,7 +87,10 @@ void Scanner::parse_identifier() {
 	
 	std::string identifier { m_source.substr(m_start, m_current - m_start) };
 
-	if (keywords_map.find(identifier) != keywords_map.end()) {
+    if (identifier == "null") make_token(TokenType::_NULL, std::monostate());
+    else if (identifier == "true") make_token(TokenType::BOOL, true);
+    else if (identifier == "false") make_token(TokenType::BOOL, false);
+    else if (keywords_map.find(identifier) != keywords_map.end()) {
 		make_token(keywords_map.at(identifier));
 	} else {
 		make_token(TokenType::IDENTIFIER, identifier);

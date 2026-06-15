@@ -46,3 +46,21 @@ std::string FormatExpr::to_string() const {
     res += "]";
     return res;
 }
+
+ValueExpr::ValueExpr(Value value) :
+    m_value(value) {}
+void ValueExpr::accept(ExprVisitor &visitor) {
+    visitor.visitValueExpr(*this);
+}
+std::string ValueExpr::to_string() const {
+    return std::format("ValueExpr[{}]", Token::value_to_string(m_value));
+}
+
+VariableExpr::VariableExpr(std::string name) :
+    m_name(name) {}
+void VariableExpr::accept(ExprVisitor &visitor) {
+    visitor.visitVariableExpr(*this);
+}
+std::string VariableExpr::to_string() const {
+    return std::format("VariableExpr[{}]", m_name);
+}

@@ -5,25 +5,15 @@
 #include <expr.h>
 #include <vector>
 #include <memory>
-#include <optional>
 #include <unordered_map>
-
-enum class ColumnType {
-    VARCHAR,
-    INT,
-    BOOLEAN
-};
-
-inline static std::unordered_map<ColumnType, std::string> column_map = {
-    {ColumnType::VARCHAR, "Varchar"}, {ColumnType::INT, "Int"},
-    {ColumnType::BOOLEAN, "Boolean"}
-};
 
 class RowStmnt;
 class TableStmnt;
 class BlockStmnt;
 class LocaleStmnt;
 class ColumnStmnt;
+class DeclStmnt;
+class PrintStmnt;
 
 class StmntVisitor {
 public:
@@ -32,6 +22,8 @@ public:
 	virtual void visitBlockStmnt(BlockStmnt &stmnt) = 0;
     virtual void visitLocaleStmnt(LocaleStmnt &stmnt) = 0;
     virtual void visitColumnStmnt(ColumnStmnt &stmnt) = 0;
+    virtual void visitDeclStmnt(DeclStmnt &stmnt) = 0;
+    virtual void visitPrintStmnt(PrintStmnt &stmnt) = 0;
     virtual ~StmntVisitor() = default;
 };
 
@@ -82,13 +74,31 @@ public:
 
 class ColumnStmnt : public Stmnt {
 public:
-	ColumnStmnt(std::string name, ColumnType column_type, std::optional<std::unique_ptr<Expr>> parameter);
+	ColumnStmnt(std::string name, std::unique_ptr<Expr> parameter);
 	void accept(StmntVisitor &visitor) override;
 	std::string to_string() const override;
 public:
 	std::string m_name;
-	ColumnType m_column_type;
-    std::optional<std::unique_ptr<Expr>> m_parameter;
+    std::unique_ptr<Expr> m_parameter;
+};
+
+class DeclStmnt : public Stmnt {
+public:
+    DeclStmnt(std::string name, std::unique_ptr<Expr> expr);
+    void accept(StmntVisitor &visitor) override;
+    std::string to_string() const override;
+public:
+    std::string m_name;
+    std::unique_ptr<Expr> m_expr;
+};
+
+class PrintStmnt : public Stmnt {
+public:
+    PrintStmnt(std::unique_ptr<Expr> expr);
+    void accept(StmntVisitor &visitor) override;
+    std::string to_string() const override;
+public:
+    std::unique_ptr<Expr> m_expr;
 };
 
 #endif
