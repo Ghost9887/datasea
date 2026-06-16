@@ -64,7 +64,7 @@ inline static const std::unordered_map<TokenType, std::string> tokens_map = {
 
 inline static const std::unordered_map<std::string, TokenType> keywords_map = {
     {"table", TokenType::TABLE}, {"column", TokenType::COLUMN}, 
-    {"count", TokenType::COUNT}, {"boolean", TokenType::BOOL},
+    {"count", TokenType::COUNT}, {"_boolean", TokenType::BOOL},
     {"increment", TokenType::INCREMENT}, {"random", TokenType::RANDOM},
     {"locale", TokenType::LOCALE}, {"format", TokenType::FORMAT},
     {"gen", TokenType::GEN}, {"let", TokenType::LET}, {"_firstname", TokenType::FIRST_NAME},
