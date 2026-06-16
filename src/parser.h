@@ -24,7 +24,9 @@ private:
 
 	std::unique_ptr<Expr> expression();
     std::unique_ptr<Expr> parse_increment();
-    std::unique_ptr<Expr> parse_random();
+    std::unique_ptr<Expr> parse_randint();
+    std::unique_ptr<Expr> parse_randbool();
+    std::unique_ptr<Expr> parse_randdouble();
     std::unique_ptr<Expr> parse_gen();
     std::unique_ptr<Expr> parse_format();
     std::unique_ptr<Expr> parse_value();

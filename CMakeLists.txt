@@ -14,7 +14,7 @@ add_executable(datasea ${APP_SOURCES})
 
 target_include_directories(datasea
     PRIVATE
-    ${CMAKE_SOURCE_DIR}/include
+    ${CMAKE_SOURCE_DIR}/src
 )
 
 target_compile_options(datasea PRIVATE -Wall -Wextra -Wpedantic)

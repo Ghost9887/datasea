@@ -94,11 +94,21 @@ void Interpreter::visitIncrementExpr(IncrementExpr &expr) {
     m_column_data.push_back(Value{ expr.m_counter++ });
 }
 
-void Interpreter::visitRandomExpr(RandomExpr &expr) {
+void Interpreter::visitRandintExpr(RandintExpr &expr) {
     int max = expr.m_end.has_value() ? expr.m_end.value() : std::numeric_limits<int>::max();
 
     
     m_column_data.push_back(Value{ generate_random_int(expr.m_start, max) }); 
+}
+
+void Interpreter::visitRandboolExpr(RandboolExpr &expr) {
+    m_column_data.push_back(Value{ generate_random_bool(expr.m_weight) });
+}
+
+void Interpreter::visitRanddoubleExpr(RanddoubleExpr &expr) {
+    double max = expr.m_end.has_value() ? expr.m_end.value() : std::numeric_limits<double>::max();
+
+    m_column_data.push_back(Value{ generate_random_double(expr.m_start, max) });
 }
 
 void Interpreter::visitGenExpr(GenExpr &expr) {
@@ -122,9 +132,6 @@ void Interpreter::visitGenExpr(GenExpr &expr) {
             case TokenType::SEX: {
                 m_column_data.push_back(Value{ cache_data(cached_data, "sex", TokenType::SEX) });
             };break;
-            case TokenType::BOOL: {
-                m_column_data.push_back(Value{ generate_random_int(0, 1) == 0 ? false : true }); 
-            }; break;
             case TokenType::CITY: {
                 m_column_data.push_back(Value{ cache_data(cached_data, "city", TokenType::CITY) });
             }; break;
@@ -322,8 +329,19 @@ const std::string Interpreter::pop_as_str() {
 
 int Interpreter::generate_random_int(int start, int end) {
     static std::mt19937 rng(std::random_device{}());
-    std::uniform_int_distribution<std::mt19937::result_type> dist(start, end);    
+    std::uniform_int_distribution<int> dist(start, end);    
+    return dist(rng);
+}
 
+bool Interpreter::generate_random_bool(double weight) {
+    static thread_local std::mt19937 rng(std::random_device{}());
+    std::bernoulli_distribution dist(weight);
+    return dist(rng);
+}
+
+double Interpreter::generate_random_double(double start, double end) {
+    static std::mt19937 rng(std::random_device{}());
+    std::uniform_real_distribution<double> dist(start, end);
     return dist(rng);
 }
 

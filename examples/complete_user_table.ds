@@ -8,13 +8,17 @@ table("users", 10) {
     column("id", increment(0..));
     column("first_name", first_name);
     column("last_name", last_name);
-    column("age", random(18..99));
+    column("age", randint(18..99));
     column("email", format("{}.{}@email.com", first_name.at(0).lower(), last_name.lower()));
 
     //format YYYY/MM/DD
-    column("created_at", format("{0000}/{00}/{00}", random(2000..2026), random(1..12), random(1..30)));
-    column("active", gen(_boolean));
+    column("created_at", format("{0000}/{00}/{00}", randint(2000..2026), randint(1..12), randint(1..30)));
+
+    //randbool defaults to weight 0.5 you can pass in a different weight into the parameter
+    column("active", randbool());
 
     //this wraps back around to zero one the limit is reached
     column("state", state.at(increment(0..3)));
+
+    column("score", randdouble(0.0..100.0));
 }

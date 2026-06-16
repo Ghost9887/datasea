@@ -30,6 +30,7 @@ sudo cmake --install build
 //types available to use
 let string = "Hello, World!";
 let int = 5;
+let double = 3.14;
 let bool = true;
 let list = ["hello", true, 10, ["nested list"]];
 
@@ -59,7 +60,7 @@ table("users", 10) {
     column("full_name", format("{} {}", first_name, last_name));
 
     //you can mix different types in format
-    column("username", format("{}{}", first_name, random(100..999))); 
+    column("username", format("{}{}", first_name, randint(100..999))); 
 
     //string and lists have a .at() function to index into them
     column("email", format("{}.{}@email.com", first_name.at(0).lower(), last_name.lower()));
@@ -67,14 +68,17 @@ table("users", 10) {
     //string also has a substr function which return a substring within that range.
     column("nickname", first_name.substr(0..3));
 
-    //random(start..end) generates a random number within the range. If not limited goes up to INT_MAX
-    column("age", random(18..99));
+    //random(start..end) generates a random integer within the range. If not limited goes up to INT_MAX
+    column("age", randint(18..99));
 
-    //TRUE or FALSE
-    column("active", gen(_boolean));
+    //TRUE or FALSE (defaults to weight 0.5)
+    column("active", randbool());
+    
+    //random(start..end) generates a random double within the range. If not limited goes up to DOUBLE_MAX
+    column("score", randdouble(0.0..100.5));
 
     //format also supports padding e.g.: format({0000}, 10) -> 0010
-    column("created_at", format("{0000}/{00}/{00}", random(2000..2026), random(1..12), random(1..30)));
+    column("created_at", format("{0000}/{00}/{00}", randint(2000..2026), randint(1..12), randm(1..30)));
 
     //you can also put raw values into a column that will never change
     column("constant", "THIS NEVER CHANGES");

@@ -7,7 +7,9 @@
 #include <memory>
 
 class IncrementExpr;
-class RandomExpr;
+class RandintExpr;
+class RandboolExpr;
+class RanddoubleExpr;
 class GenExpr;
 class FormatExpr;
 class ValueExpr;
@@ -22,7 +24,9 @@ class UpperFuncExpr;
 class ExprVisitor {
 public:
     virtual void visitIncrementExpr(IncrementExpr &expr) = 0;
-    virtual void visitRandomExpr(RandomExpr &expr) = 0;
+    virtual void visitRandintExpr(RandintExpr &expr) = 0;
+    virtual void visitRandboolExpr(RandboolExpr &expr) = 0;
+    virtual void visitRanddoubleExpr(RanddoubleExpr &expr) = 0;
     virtual void visitGenExpr(GenExpr &expr) = 0;
     virtual void visitFormatExpr(FormatExpr &expr) = 0;
     virtual void visitValueExpr(ValueExpr &expr) = 0;
@@ -54,14 +58,33 @@ public:
     int m_counter;
 };
 
-class RandomExpr : public Expr {
+class RandintExpr : public Expr {
 public:
-    RandomExpr(int start, std::optional<int> end);
+    RandintExpr(int start, std::optional<int> end);
     void accept(ExprVisitor &visitor) override;
     std::string to_string() const override;
 public:
     int m_start;
     std::optional<int> m_end;
+};
+
+class RandboolExpr : public Expr {
+public:
+    RandboolExpr(double weight);
+    void accept(ExprVisitor &visitor) override;
+    std::string to_string() const override;
+public:
+    double m_weight;
+};
+
+class RanddoubleExpr : public Expr {
+public:
+    RanddoubleExpr(double start, std::optional<double> end);
+    void accept(ExprVisitor &visitor) override;
+    std::string to_string() const override;
+public:
+    double m_start;
+    std::optional<double> m_end;
 };
 
 class GenExpr : public Expr {

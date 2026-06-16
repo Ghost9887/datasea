@@ -107,7 +107,9 @@ std::unique_ptr<Stmnt> Parser::parse_assign() {
 
 std::unique_ptr<Expr> Parser::expression() {
     if (match(TokenType::INCREMENT)) return parse_increment();
-    else if (match(TokenType::RANDOM)) return parse_random();
+    else if (match(TokenType::RANDINT)) return parse_randint();
+    else if (match(TokenType::RANDBOOL)) return parse_randbool();
+    else if (match(TokenType::RANDDOUBLE)) return parse_randdouble();
     else if (match(TokenType::GEN)) return parse_gen();
     else if (match(TokenType::FORMAT)) return parse_format();
     else if (match(TokenType::IDENTIFIER)) return parse_variable();
@@ -128,7 +130,7 @@ std::unique_ptr<Expr> Parser::parse_increment() {
     return std::make_unique<IncrementExpr>(start, end);
 }
 
-std::unique_ptr<Expr> Parser::parse_random() {
+std::unique_ptr<Expr> Parser::parse_randint() {
     consume(TokenType::LPAREN, "Expected '('.");
     consume(TokenType::INT, "Expected 'start'.");
     int start { std::get<int>(previous().m_value.m_data) };
@@ -138,7 +140,30 @@ std::unique_ptr<Expr> Parser::parse_random() {
         end = std::get<int>(previous().m_value.m_data);
     }
     consume(TokenType::RPAREN, "Expected ')'.");
-    return std::make_unique<RandomExpr>(start, end);
+    return std::make_unique<RandintExpr>(start, end);
+}
+
+std::unique_ptr<Expr> Parser::parse_randbool() {
+    consume(TokenType::LPAREN, "Expected '('.");
+    double weight { 0.5 };
+    if (match(TokenType::DOUBLE)) {
+        weight = std::get<double>(previous().m_value.m_data);
+    }
+    consume(TokenType::RPAREN, "Expected ')'.");
+    return std::make_unique<RandboolExpr>(weight);
+}
+
+std::unique_ptr<Expr> Parser::parse_randdouble() {
+    consume(TokenType::LPAREN, "Expected '('.");
+    consume(TokenType::DOUBLE, "Expected 'start'.");
+    double start { std::get<double>(previous().m_value.m_data) };
+    consume(TokenType::DOUBLE_DOT, "Expected '..'.");
+    std::optional<double> end { std::nullopt };
+    if (match(TokenType::DOUBLE)) {
+        end = std::get<double>(previous().m_value.m_data);
+    }
+    consume(TokenType::RPAREN, "Expected ')'.");
+    return std::make_unique<RanddoubleExpr>(start, end);
 }
 
 std::unique_ptr<Expr> Parser::parse_gen() {
@@ -167,7 +192,7 @@ std::unique_ptr<Expr> Parser::parse_format() {
 }
 
 std::unique_ptr<Expr> Parser::parse_value() {
-    if (match(TokenType::STRING, TokenType::INT, TokenType::BOOL, TokenType::_NULL)) {
+    if (match(TokenType::STRING, TokenType::INT, TokenType::DOUBLE, TokenType::BOOL, TokenType::_NULL)) {
         Value value { previous().m_value.m_data };
         return std::make_unique<ValueExpr>(std::move(value));
     }

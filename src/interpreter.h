@@ -25,7 +25,9 @@ private:
     void visitAssignStmnt(AssignStmnt &stmnt) override;
 
     void visitIncrementExpr(IncrementExpr &expr) override;
-    void visitRandomExpr(RandomExpr &expr) override;
+    void visitRandintExpr(RandintExpr &expr) override;
+    void visitRandboolExpr(RandboolExpr &expr) override;
+    void visitRanddoubleExpr(RanddoubleExpr &expr) override;
     void visitGenExpr(GenExpr &expr) override;
     void visitFormatExpr(FormatExpr &expr) override;
     void visitValueExpr(ValueExpr &expr) override;
@@ -42,6 +44,8 @@ private:
     const Value pop();
     const std::string pop_as_str();
     int generate_random_int(int start, int end);
+    bool generate_random_bool(double weight);
+    double generate_random_double(double start, double end);
     std::string cache_data(CachedData &cached_data, std::string &&file_name, TokenType type);
     std::string build_query(const std::string &table_name);
     void write(const std::string &content);

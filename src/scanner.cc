@@ -82,15 +82,14 @@ void Scanner::parse_digit() {
 		advance();
 	}
     
-    /*
-    if (peek() == '.') {
+    //prevents randint(1..10)
+    if (peek() == '.' && m_current + 1 < m_source.size() && m_source.at(m_current + 1) != '.') {
         is_double = true;
         advance();
         while(std::isdigit(peek())) {
 		   advance();
 	    }
     }
-    */
 
 	std::string digit { m_source.substr(m_start, m_current - m_start) };
 

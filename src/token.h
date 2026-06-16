@@ -17,8 +17,10 @@ enum class TokenType {
 	STRING, INT, DOUBLE, BOOL, IDENTIFIER,
     _NULL,
 
-	TABLE, COLUMN, COUNT,
-    LOCALE, RANDOM, INCREMENT,
+	TABLE, COLUMN,     
+    LOCALE, RANDINT, 
+    RANDBOOL, RANDDOUBLE, 
+    INCREMENT, 
     FORMAT, GEN, LET,
     PRINT, AT, SUBSTR, 
     LOWER, UPPER,
@@ -47,8 +49,9 @@ inline static const std::unordered_map<TokenType, std::string> tokens_map = {
     {TokenType::LOWER, "Lower"}, {TokenType::UPPER, "Upper"},
 
 	{TokenType::TABLE, "Table"}, {TokenType::COLUMN, "Column"},
-	{TokenType::COUNT, "Count"}, {TokenType::INCREMENT, "Increment"},
-    {TokenType::RANDOM, "Random"}, {TokenType::FORMAT, "Format"},
+	{TokenType::INCREMENT, "Increment"}, {TokenType::RANDINT, "Randint"}, 
+    {TokenType::RANDBOOL, "Randbool"}, {TokenType::RANDDOUBLE, "Randdouble"}, 
+    {TokenType::FORMAT, "Format"},
     {TokenType::GEN, "Gen"}, {TokenType::LET, "Let"}, 
 
     {TokenType::FIRST_NAME, "First_Name"}, {TokenType::LAST_NAME, "Last_Name"},
@@ -63,23 +66,30 @@ inline static const std::unordered_map<TokenType, std::string> tokens_map = {
 };
 
 inline static const std::unordered_map<std::string, TokenType> keywords_map = {
+    //keywords
     {"table", TokenType::TABLE}, {"column", TokenType::COLUMN}, 
-    {"count", TokenType::COUNT}, {"_boolean", TokenType::BOOL},
-    {"increment", TokenType::INCREMENT}, {"random", TokenType::RANDOM},
+    {"increment", TokenType::INCREMENT}, {"randint", TokenType::RANDINT},
+    {"randbool", TokenType::RANDBOOL},  {"randdouble", TokenType::RANDDOUBLE},
     {"locale", TokenType::LOCALE}, {"format", TokenType::FORMAT},
-    {"gen", TokenType::GEN}, {"let", TokenType::LET}, {"_firstname", TokenType::FIRST_NAME},
-    {"_lastname", TokenType::LAST_NAME}, {"_sex", TokenType::SEX}, {"print", TokenType::PRINT},
-    {"at", TokenType::AT}, {"substr", TokenType::SUBSTR}, {"lower", TokenType::LOWER},
-    {"upper", TokenType::UPPER}, {"_city", TokenType::CITY}, {"_company", TokenType::COMPANY},
+    {"gen", TokenType::GEN}, {"let", TokenType::LET}, 
+
+    //gen keywords
+    {"_firstname", TokenType::FIRST_NAME}, {"_boolean", TokenType::BOOL},
+    {"_lastname", TokenType::LAST_NAME}, {"_sex", TokenType::SEX}, 
+    {"_city", TokenType::CITY}, {"_company", TokenType::COMPANY},
     {"_department", TokenType::DEPARTMENT}, {"_jobtitle", TokenType::JOB_TITLE},
     {"_state", TokenType::STATE}, {"_streetname", TokenType::STREET_NAME},
+
+    //functions
+    {"print", TokenType::PRINT}, {"at", TokenType::AT}, 
+    {"substr", TokenType::SUBSTR}, {"lower", TokenType::LOWER},
+    {"upper", TokenType::UPPER}, 
 };
 
 class Token {
 public:
 	Token(TokenType type, Value value, size_t line, size_t column);
 	std::string to_string() const;
-	
 	~Token() = default;
 public:
 	TokenType m_type;
@@ -87,10 +97,5 @@ public:
 	size_t m_line;
 	size_t m_column;
 };
-
-inline std::ostream& operator<<(std::ostream& os, const Token& t) {
-    os << t.to_string();
-    return os;
-}
 
 #endif

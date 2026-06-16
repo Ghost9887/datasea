@@ -12,16 +12,37 @@ std::string IncrementExpr::to_string() const {
     return std::format("IncrementExpr[{}..]", std::to_string(m_start));
 }
 
-RandomExpr::RandomExpr(int start, std::optional<int> end) :
+RandintExpr::RandintExpr(int start, std::optional<int> end) :
     m_start(start), m_end(end) {}
-void RandomExpr::accept(ExprVisitor &visitor) {
-    visitor.visitRandomExpr(*this);
+void RandintExpr::accept(ExprVisitor &visitor) {
+    visitor.visitRandintExpr(*this);
 }
-std::string RandomExpr::to_string() const {
+std::string RandintExpr::to_string() const {
     if (m_end.has_value()) {
         return std::format("RandomExpr[{}..{}]", std::to_string(m_start), std::to_string(m_end.value()));
     }
     return std::format("RandomExpr[{}..]", std::to_string(m_start));
+}
+
+RandboolExpr::RandboolExpr(double weight) :
+    m_weight(weight) {}
+void RandboolExpr::accept(ExprVisitor &visitor) {
+    visitor.visitRandboolExpr(*this);
+}
+std::string RandboolExpr::to_string() const {
+    return std::format("RandboolExpr[{}]", std::to_string(m_weight));
+}
+
+RanddoubleExpr::RanddoubleExpr(double start, std::optional<double> end) :
+    m_start(start), m_end(end) {}
+void RanddoubleExpr::accept(ExprVisitor &visitor) {
+    visitor.visitRanddoubleExpr(*this);
+}
+std::string RanddoubleExpr::to_string() const {
+    if (m_end.has_value()) {
+        return std::format("RanddoubleExpr[{}, {}]", m_start, m_end.value());
+    }
+    return std::format("RanddoubleExpr[{}]", m_start);
 }
 
 GenExpr::GenExpr(TokenType type) :

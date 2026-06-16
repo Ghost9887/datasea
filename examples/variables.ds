@@ -9,10 +9,14 @@ print(first_name.substr(0..2)); //end is exclusive
 
 print(last_name);
 
-let age = random(0..100);
+let age = randint(0..100);
 print(age);
 
-let active = gen(_boolean);
+let temp = 1.224;
+print(temp);
+
+//80% chance to return true
+let active = randbool(0.8);
 print(active);
 
 let users = [["Nested"], "Adam", "Felix", "Carol", "Karen", "Jacob"];
