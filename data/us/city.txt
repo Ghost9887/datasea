@@ -1,0 +1,194 @@
+Springfield
+Riverside
+Franklin
+Greenville
+Bristol
+Clinton
+Fairview
+Salem
+Madison
+Georgetown
+Arlington
+Ashland
+Oxford
+Milton
+Clayton
+Kingston
+Auburn
+Manchester
+Centerville
+Winchester
+Newport
+Oakland
+Jackson
+Burlington
+Lexington
+Dover
+Hudson
+Cleveland
+Dayton
+Richmond
+Florence
+Gainesville
+Troy
+Canton
+Anderson
+Marion
+Union
+Washington
+Hamilton
+Salinas
+Lancaster
+Hillsboro
+Mount Vernon
+Newark
+Rochester
+Plymouth
+Cedar Rapids
+Aurora
+Riverside
+Lakewood
+Lincoln
+Pasadena
+Savannah
+Fayetteville
+Concord
+Columbia
+Charleston
+Springdale
+Rockville
+Glendale
+Highland
+Fairfield
+Farmington
+Shelby
+Monroe
+Jefferson
+Somerset
+Henderson
+Greensboro
+Peoria
+Wilmington
+Hartford
+Tempe
+Toledo
+Mobile
+Orlando
+Tallahassee
+Knoxville
+Chattanooga
+Boulder
+Fort Collins
+Lafayette
+Irvine
+Fremont
+Modesto
+Oxnard
+Huntington Beach
+Santa Ana
+Anaheim
+Reno
+Boise
+Spokane
+Tacoma
+Olympia
+Eugene
+Salem
+Medford
+Bend
+Billings
+Missoula
+Fargo
+Sioux Falls
+Omaha
+Lincoln
+Wichita
+Tulsa
+Norman
+Edmond
+Amarillo
+Lubbock
+El Paso
+Austin
+Dallas
+Houston
+San Antonio
+Phoenix
+Mesa
+Tucson
+Albuquerque
+Santa Fe
+Denver
+Colorado Springs
+Cheyenne
+Rapid City
+Des Moines
+Cedar Falls
+Madison
+Milwaukee
+Green Bay
+Chicago
+Peoria
+Rockford
+Detroit
+Grand Rapids
+Flint
+Cleveland
+Columbus
+Cincinnati
+Toledo
+Pittsburgh
+Harrisburg
+Philadelphia
+Baltimore
+Richmond
+Norfolk
+Raleigh
+Durham
+Charlotte
+Columbia
+Atlanta
+Savannah
+Birmingham
+Montgomery
+Jackson
+New Orleans
+Baton Rouge
+Little Rock
+Memphis
+Nashville
+Louisville
+Indianapolis
+St. Louis
+Kansas City
+Minneapolis
+St. Paul
+Fargo
+Bismarck
+Helena
+Bozeman
+Salt Lake City
+Provo
+Las Vegas
+Henderson
+Reno
+Carson City
+Portland
+Seattle
+San Francisco
+San Jose
+Los Angeles
+San Diego
+Sacramento
+Fresno
+Bakersfield
+Stockton
+Long Beach
+Irvine
+Chula Vista
+Glendale
+Scottsdale
+Gilbert
+Chandler
+Tempe
+Mesa

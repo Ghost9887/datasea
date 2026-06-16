@@ -1,0 +1,98 @@
+Software Engineer
+Backend Developer
+Frontend Developer
+Full Stack Developer
+Mobile App Developer
+DevOps Engineer
+Cloud Architect
+Systems Administrator
+Network Engineer
+Database Administrator
+Data Analyst
+Data Scientist
+Machine Learning Engineer
+IT Support Specialist
+Cybersecurity Analyst
+Product Manager
+Project Manager
+Scrum Master
+Business Analyst
+UX Designer
+UI Designer
+Graphic Designer
+Content Writer
+Copywriter
+Marketing Specialist
+Digital Marketing Manager
+SEO Specialist
+Social Media Manager
+Sales Representative
+Account Manager
+Customer Support Specialist
+Customer Success Manager
+Operations Manager
+Office Administrator
+Executive Assistant
+Human Resources Manager
+Recruiter
+Talent Acquisition Specialist
+Financial Analyst
+Accountant
+Bookkeeper
+Auditor
+Compliance Officer
+Legal Assistant
+Paralegal
+Attorney
+Nurse
+Registered Nurse
+Medical Assistant
+Pharmacist
+Pharmacy Technician
+Lab Technician
+Radiology Technician
+Physical Therapist
+Occupational Therapist
+Dental Assistant
+Dentist
+Veterinary Technician
+Veterinarian
+Teacher
+Substitute Teacher
+Professor
+Research Assistant
+Librarian
+Electrician
+Plumber
+Carpenter
+Construction Worker
+HVAC Technician
+Mechanic
+Truck Driver
+Delivery Driver
+Warehouse Worker
+Forklift Operator
+Manufacturing Technician
+Quality Assurance Inspector
+Production Supervisor
+Chef
+Cook
+Server
+Barista
+Bartender
+Hotel Manager
+Housekeeper
+Security Guard
+Janitor
+Landscaper
+Real Estate Agent
+Property Manager
+Insurance Agent
+Loan Officer
+Bank Teller
+Retail Associate
+Store Manager
+Cashier
+Event Coordinator
+Photographer
+Video Editor
