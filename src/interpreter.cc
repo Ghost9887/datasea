@@ -141,7 +141,6 @@ void Interpreter::visitFormatExpr(FormatExpr &expr) {
     std::string res { "'" };
     while(index < expr.m_pattern.size()) {
         char c { expr.m_pattern.at(index++) };
-        if (c == '"') break;
         if (c == '{' && index < expr.m_pattern.size() && expr.m_pattern.at(index) == '}') {
             if (arg_counter >= expr.m_variables.size()) error("Too many arguments in format.");
             evaluate(*expr.m_variables.at(arg_counter++));
