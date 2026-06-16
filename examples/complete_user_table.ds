@@ -1,0 +1,20 @@
+locale("us");
+
+table("users", 10) {
+    let first_name = gen(_firstname);
+    let last_name = gen(_lastname);
+    let state = ["Working", "Break", "Home"];
+
+    column("id", increment(0..));
+    column("first_name", first_name);
+    column("last_name", last_name);
+    column("age", random(18..99));
+    column("email", format("{}.{}@email.com", first_name.at(0).lower(), last_name.lower()));
+
+    //format YYYY/MM/DD
+    column("created_at", format("{0000}/{00}/{00}", random(2000..2026), random(1..12), random(1..30)));
+    column("active", gen(_boolean));
+
+    //this wraps back around to zero one the limit is reached
+    column("state", state.at(increment(0..3)));
+}

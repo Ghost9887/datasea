@@ -1,0 +1,8 @@
+locale("us");
+
+table("users", 1) {
+    column("id", increment(0..));
+    column("first_name", gen(_firstname));
+    column("last_name", gen(_lastname));
+    column("age", random(1..100));
+}

@@ -95,22 +95,22 @@ std::string FuncExpr::to_string() const {
     return std::format("FuncExpr[{}]", m_function->to_string());
 }
 
-AtFuncExpr::AtFuncExpr(int index) :
-    m_index(index) {}
+AtFuncExpr::AtFuncExpr(std::unique_ptr<Expr> index) :
+    m_index(std::move(index)) {}
 void AtFuncExpr::accept(ExprVisitor &visitor) {
     visitor.visitAtFuncExpr(*this);
 }
 std::string AtFuncExpr::to_string() const {
-    return std::format("AtFuncExpr[{}]", std::to_string(m_index));
+    return std::format("AtFuncExpr[{}]", m_index->to_string());
 }
 
-SubstrFuncExpr::SubstrFuncExpr(int start, int end) :
-    m_start(start), m_end(end) {}
+SubstrFuncExpr::SubstrFuncExpr(std::unique_ptr<Expr> start, std::unique_ptr<Expr> end) :
+    m_start(std::move(start)), m_end(std::move(end)) {}
 void SubstrFuncExpr::accept(ExprVisitor &visitor) {
     visitor.visitSubstrFuncExpr(*this);
 }
 std::string SubstrFuncExpr::to_string() const {
-    return std::format("SubstrFuncExpr[{}, {}]", std::to_string(m_start), std::to_string(m_end));
+    return std::format("SubstrFuncExpr[{}, {}]", m_start->to_string(), m_end->to_string());
 }
 
 void LowerFuncExpr::accept(ExprVisitor &visitor) {

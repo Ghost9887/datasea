@@ -1,0 +1,10 @@
+let first_name = "Adam";
+let list = ["hello", "world"];
+
+print(first_name.at(0));
+print(first_name.substr(0..2));
+
+let index = 0;
+
+print(list.at(index));
+print(list.at(index).substr(index..2));

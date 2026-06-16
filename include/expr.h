@@ -123,21 +123,21 @@ public:
 
 class AtFuncExpr : public Expr {
 public:
-    AtFuncExpr(int index);
+    AtFuncExpr(std::unique_ptr<Expr> index);
     void accept(ExprVisitor &visitor) override;
     std::string to_string() const override;
 public:
-    int m_index;
+    std::unique_ptr<Expr> m_index;
 };
 
 class SubstrFuncExpr : public Expr {
 public:
-    SubstrFuncExpr(int start, int end);
+    SubstrFuncExpr(std::unique_ptr<Expr> start, std::unique_ptr<Expr> end);
     void accept(ExprVisitor &visitor) override;
     std::string to_string() const override;
 public:
-    int m_start;
-    int m_end;
+    std::unique_ptr<Expr> m_start;
+    std::unique_ptr<Expr> m_end;
 };
 
 class LowerFuncExpr : public Expr {

@@ -9,6 +9,7 @@ void print_help() {
     std::cout << "Script files must end with .ds" << std::endl;
     std::cout << "Custom output files must end with .sql" << std::endl;
 	std::cout << "Usage: ./datasea <script_file> [output_file_name]" << std::endl;
+    std::cout << "CURRENTLY ONLY 'us' LOCALE IS SUPPORTED" << std::endl;
 }
 
 std::string read_file(const std::string file_path) {
@@ -27,8 +28,13 @@ int main(int argc, char **argv) {
 		print_help();
 		return 0;
 	}
-
     std::string input_file { argv[1] };
+    
+    if (input_file == "-h") {
+        print_help();
+        return 0;
+    }
+
     if (!input_file.ends_with(".ds")) {
         std::cout << "Script file must end with .ds" << std::endl;
         return 0;

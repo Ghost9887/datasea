@@ -221,23 +221,28 @@ void Interpreter::visitFuncExpr(FuncExpr &expr) {
 
 void Interpreter::visitAtFuncExpr(AtFuncExpr &expr) {
     Value value { pop() };
+    evaluate(*expr.m_index);
+    Value index_val { pop() };
+    if (!is_int(index_val)) error("Index must be a int");
+    int index { std::get<int>(index_val.m_data) };
+
     if (is_string(value)) {
         std::string str { std::get<std::string>(value.m_data) };
-        if (expr.m_index < static_cast<int>(str.size())) {
-            if (expr.m_index > -1) {
-                str = str.at(expr.m_index);
+        if (index < static_cast<int>(str.size())) {
+            if (index > -1) {
+                str = str.at(index);
                 m_column_data.push_back(Value {std::move(str)});
                 return;
             }else error("Index cannot be smaller than 0");
-        }else error(std::format("Index out of bounds: {} > {}", std::to_string(expr.m_index), std::to_string(str.size() - 1)));
+        }else error(std::format("Index out of bounds: {} > {}", std::to_string(index), std::to_string(str.size() - 1)));
     }else if (is_list(value)) {
         std::vector<Value> array { std::get<std::vector<Value>>(value.m_data) };
-        if (expr.m_index < static_cast<int>(array.size())) {
-            if (expr.m_index > -1) {
-                m_column_data.push_back(Value {std::move(array.at(expr.m_index))});
+        if (index < static_cast<int>(array.size())) {
+            if (index > -1) {
+                m_column_data.push_back(Value {std::move(array.at(index))});
                 return;
             }else error("Index cannot be smaller than 0");
-        }else error(std::format("Index out of bounds: {} > {}", std::to_string(expr.m_index), std::to_string(array.size() - 1)));
+        }else error(std::format("Index out of bounds: {} > {}", std::to_string(index), std::to_string(array.size() - 1)));
     }
 
 
@@ -246,17 +251,28 @@ void Interpreter::visitAtFuncExpr(AtFuncExpr &expr) {
 
 void Interpreter::visitSubstrFuncExpr(SubstrFuncExpr &expr) {
     Value value { pop() };
+
+    evaluate(*expr.m_start);
+    Value start_val { pop() };
+
+    evaluate(*expr.m_end);
+    Value end_val { pop() };
+
+    if (!is_int(start_val) || !is_int(end_val)) error("Start and end must be ints");
+    int start { std::get<int>(start_val.m_data) };
+    int end { std::get<int>(end_val.m_data) };
+
     if (is_string(value)) {
         std::string str { std::get<std::string>(value.m_data) };
-        if (expr.m_start < static_cast<int>(str.size()) &&
-                expr.m_end < static_cast<int>(str.size())) {
-            if (expr.m_start > -1 && expr.m_end > -1) {
-                str = str.substr(expr.m_start, expr.m_end - expr.m_start);
+        if (start < static_cast<int>(str.size()) &&
+                end < static_cast<int>(str.size())) {
+            if (start > -1 && end > -1) {
+                str = str.substr(start, end - start);
                 m_column_data.push_back(Value {std::move(str)});
                 return;
             }else error("Index cannot be smaller than 0");
         }else error(std::format("Index out of bounds: ({}..{}) > {}", 
-                    std::to_string(expr.m_start), std::to_string(expr.m_end), std::to_string(str.size() - 1)));
+                    std::to_string(start), std::to_string(end), std::to_string(str.size() - 1)));
     }
 
     error("Cannot perform 'Substr' function on a non string type");

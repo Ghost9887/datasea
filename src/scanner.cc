@@ -17,6 +17,13 @@ std::vector<Token> Scanner::tokenize() {
             case ']': make_token(TokenType::RBRACKET); break;
             case '$': make_token(TokenType::DOLLAR); break;
             case '=': make_token(TokenType::EQUAL); break;
+            case '/': {
+                if (peek() == '/') {
+                    while(peek() != '\n') advance();
+                    m_line++;
+                    m_column = 0;
+                }
+            };break;
             case '-': parse_digit(); break;
 			case '.': {
 				if (peek() == '.') {

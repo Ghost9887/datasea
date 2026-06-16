@@ -1,0 +1,21 @@
+locale("us");
+
+let first_name = gen(_firstname);
+let last_name = gen(_lastname);
+
+print(first_name);
+print(first_name.at(0));
+print(first_name.substr(0..2)); //end is exclusive
+
+print(last_name);
+
+let age = random(0..100);
+print(age);
+
+let active = gen(_boolean);
+print(active);
+
+let users = [["Nested"], "Adam", "Felix", "Carol", "Karen", "Jacob"];
+print(users);
+print(users.at(0).at(0));
+print(users.at(1));

@@ -209,21 +209,18 @@ std::unique_ptr<Expr> Parser::func_expression() {
 
 std::unique_ptr<Expr> Parser::parse_at_func() {
     consume(TokenType::LPAREN, "Expected '('.");
-    consume(TokenType::INT, "Expected 'index'.");
-    int index { std::get<int>(previous().m_value.m_data) };
+    std::unique_ptr<Expr> index { expression() };
     consume(TokenType::RPAREN, "Expected ')'.");
-    return std::make_unique<AtFuncExpr>(index);
+    return std::make_unique<AtFuncExpr>(std::move(index));
 }
 
 std::unique_ptr<Expr> Parser::parse_substr_func() {
     consume(TokenType::LPAREN, "Expected '('.");
-    consume(TokenType::INT, "Expected 'start'.");
-    int start { std::get<int>(previous().m_value.m_data) };
+    std::unique_ptr<Expr> start { expression() };
     consume(TokenType::DOUBLE_DOT, "Expected '..'.");
-    consume(TokenType::INT, "Expected 'end'.");
-    int end { std::get<int>(previous().m_value.m_data) };
+    std::unique_ptr<Expr> end { expression() };
     consume(TokenType::RPAREN, "Expected ')'.");
-    return std::make_unique<SubstrFuncExpr>(start, end);
+    return std::make_unique<SubstrFuncExpr>(std::move(start), std::move(end));
 }
 
 std::unique_ptr<Expr> Parser::parse_lower_func() {
