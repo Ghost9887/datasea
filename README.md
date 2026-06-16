@@ -14,6 +14,7 @@ Datasea is a language to help you generate SQL data the way you want.
 - Expressive
 - Easy syntax
 - Programming style generation
+- Random or weighted generation of common types with parameters
 
 ## Installation
 ```bash
