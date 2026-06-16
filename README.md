@@ -24,8 +24,7 @@ cmake --build build
 sudo cmake --install build
 ```
 
-### EXAMPLES
-1. Simple users table
+### EXAMPLE
 ```
 //types available to use
 let string = "Hello, World!";
