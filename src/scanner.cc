@@ -31,7 +31,7 @@ std::vector<Token> Scanner::tokenize() {
 			default: {
 				 if (std::isdigit(c)) {
 					 parse_digit();
-				 }else if (std::isalpha(c)) {
+				 }else if (is_alpha(c)) {
 					 parse_identifier();
 				 }
 			}; break;
@@ -98,6 +98,12 @@ bool Scanner::is_alpha_numeric(char c) {
     return ('0' <= c && c <= '9')
                     ||
            ('a' <= c && c <= 'z')
+                    ||
+                (c == '_');
+}
+
+bool Scanner::is_alpha(char c) {
+    return ('a' <= c && c <= 'z')
                     ||
                 (c == '_');
 }

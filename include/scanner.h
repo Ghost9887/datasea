@@ -26,6 +26,7 @@ private:
 	void parse_string();
 	void parse_digit();
     bool is_alpha_numeric(char c);
+    bool is_alpha(char c);
 	void parse_identifier();
     
 };

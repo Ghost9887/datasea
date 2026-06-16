@@ -143,13 +143,10 @@ std::unique_ptr<Expr> Parser::parse_random() {
 
 std::unique_ptr<Expr> Parser::parse_gen() {
     consume(TokenType::LPAREN, "Expected '('.");
-    if (match(TokenType::BOOL, TokenType::FIRST_NAME, TokenType::LAST_NAME, TokenType::SEX)) {
-        TokenType type { previous().m_type };
-        consume(TokenType::RPAREN, "Expected ')'.");
-        return std::make_unique<GenExpr>(type);
-    }else {
-        error("Expected gen type");
-    }
+    advance();
+    TokenType type { previous().m_type };
+    consume(TokenType::RPAREN, "Expected ')'.");
+    return std::make_unique<GenExpr>(type);
 }
 
 std::unique_ptr<Expr> Parser::parse_format() {

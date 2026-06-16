@@ -20,9 +20,13 @@ enum class TokenType {
 	TABLE, COLUMN, COUNT,
     LOCALE, RANDOM, INCREMENT,
     FORMAT, GEN, LET,
-    FIRST_NAME, LAST_NAME, 
-    SEX, PRINT, AT, SUBSTR, 
+    PRINT, AT, SUBSTR, 
     LOWER, UPPER,
+
+    //GEN TYPE IDENTIFIERS
+    FIRST_NAME, LAST_NAME,
+    SEX, CITY, COMPANY, DEPARTMENT, 
+    JOB_TITLE, STATE, STREET_NAME,
 
 	UKNOWN
 };
@@ -46,8 +50,12 @@ inline static const std::unordered_map<TokenType, std::string> tokens_map = {
 	{TokenType::COUNT, "Count"}, {TokenType::INCREMENT, "Increment"},
     {TokenType::RANDOM, "Random"}, {TokenType::FORMAT, "Format"},
     {TokenType::GEN, "Gen"}, {TokenType::LET, "Let"}, 
+
     {TokenType::FIRST_NAME, "First_Name"}, {TokenType::LAST_NAME, "Last_Name"},
-    {TokenType::SEX, "Sex"}, {TokenType::PRINT, "Print"},
+    {TokenType::SEX, "Sex"}, {TokenType::PRINT, "Print"}, {TokenType::CITY, "City"},
+    {TokenType::COMPANY, "Company"}, {TokenType::DEPARTMENT, "Department"},
+    {TokenType::JOB_TITLE, "Job_Title"}, {TokenType::STATE, "State"}, 
+    {TokenType::STREET_NAME, "Street_Name"},
 
     {TokenType::LOCALE, "Locale"},
 
@@ -59,10 +67,12 @@ inline static const std::unordered_map<std::string, TokenType> keywords_map = {
     {"count", TokenType::COUNT}, {"boolean", TokenType::BOOL},
     {"increment", TokenType::INCREMENT}, {"random", TokenType::RANDOM},
     {"locale", TokenType::LOCALE}, {"format", TokenType::FORMAT},
-    {"gen", TokenType::GEN}, {"let", TokenType::LET}, {"firstname", TokenType::FIRST_NAME},
-    {"lastname", TokenType::LAST_NAME}, {"sex", TokenType::SEX}, {"print", TokenType::PRINT},
+    {"gen", TokenType::GEN}, {"let", TokenType::LET}, {"_firstname", TokenType::FIRST_NAME},
+    {"_lastname", TokenType::LAST_NAME}, {"_sex", TokenType::SEX}, {"print", TokenType::PRINT},
     {"at", TokenType::AT}, {"substr", TokenType::SUBSTR}, {"lower", TokenType::LOWER},
-    {"upper", TokenType::UPPER},
+    {"upper", TokenType::UPPER}, {"_city", TokenType::CITY}, {"_company", TokenType::COMPANY},
+    {"_department", TokenType::DEPARTMENT}, {"_jobtitle", TokenType::JOB_TITLE},
+    {"_state", TokenType::STATE}, {"_streetname", TokenType::STREET_NAME},
 };
 
 class Token {

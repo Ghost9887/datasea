@@ -3,16 +3,15 @@ locale("us");
 let custom = ["this", "is", "a", "test"];
 let nested = [["this", "is", "a", "test"], "hello"];
 
-table ("users", 4) {
-    let first_name = gen(firstname);
-    let last_name = gen(lastname);
+table ("users", 5) {
+    let first_name = gen(_firstname);
+    let last_name = gen(_lastname);
 
     column("id", increment(0..));
-    column("first_name", first_name);
-    column("last_name", last_name);
     column("full_name", format("{} {}", first_name, last_name));
     column("email", format("{}{}@email.com", first_name.at(0).lower(), last_name.lower()));
     column("age", random(18..99));
     column("active", gen(boolean));
+    column("date", format("{0000}-{00}-{00} {00}:{00}:{00}", random(2000..2026), random(1..12), random(1..30), random(1..12), random(0..60), random(0..60)));
     column("test", format("{}", nested.at(0).at(0).substr(0..2)));
 }

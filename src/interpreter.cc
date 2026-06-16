@@ -124,8 +124,25 @@ void Interpreter::visitGenExpr(GenExpr &expr) {
             case TokenType::BOOL: {
                 m_column_data.push_back(Value{ generate_random_int(0, 1) == 0 ? false : true }); 
             }; break;
+            case TokenType::CITY: {
+                m_column_data.push_back(Value{ cache_data(cached_data, "city", TokenType::CITY) });
+            }; break;
+            case TokenType::COMPANY: {
+                m_column_data.push_back(Value{ cache_data(cached_data, "company", TokenType::COMPANY) });
+            }; break;
+            case TokenType::DEPARTMENT: {
+                m_column_data.push_back(Value{ cache_data(cached_data, "department", TokenType::DEPARTMENT) });
+            }; break;
+            case TokenType::JOB_TITLE: {
+                m_column_data.push_back(Value{ cache_data(cached_data, "job_title", TokenType::JOB_TITLE) });
+            }; break;
+            case TokenType::STATE: {
+                m_column_data.push_back(Value{ cache_data(cached_data, "state", TokenType::STATE) });
+            }; break;
+            case TokenType::STREET_NAME: {
+                m_column_data.push_back(Value{ cache_data(cached_data, "street_name", TokenType::STREET_NAME) });
+            }; break;
             default:  
-                //should be unreachable
                 error("Failed to find a valid gen type.");
         }
     }
@@ -141,11 +158,19 @@ void Interpreter::visitFormatExpr(FormatExpr &expr) {
     std::string res { "'" };
     while(index < expr.m_pattern.size()) {
         char c { expr.m_pattern.at(index++) };
-        if (c == '{' && index < expr.m_pattern.size() && expr.m_pattern.at(index) == '}') {
+        if (c == '{') {
+            std::string padding {};
+            while (index < expr.m_pattern.size() && expr.m_pattern.at(index) != '}') {
+                padding += expr.m_pattern.at(index++);
+            }
             if (arg_counter >= expr.m_variables.size()) error("Too many arguments in format.");
             evaluate(*expr.m_variables.at(arg_counter++));
-            res += pop_as_str();
-            //skip the }
+            std::string str { pop_as_str() };
+            if (!padding.empty() && padding.size() != str.size()) {
+                if (padding.size() > str.size()) {
+                    res += padding.replace(padding.size() - str.size(), str.size(), str);
+                }else error("Generated string is bigger than the formated padding");
+            }else res += str;
             index++;
         }else res += c;
     }
