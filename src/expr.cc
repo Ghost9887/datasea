@@ -56,16 +56,19 @@ std::string ValueExpr::to_string() const {
     return std::format("ValueExpr[{}]", value_to_string(m_value));
 }
 
-VariableExpr::VariableExpr(std::string name, std::optional<std::unique_ptr<Expr>> expr) :
-    m_name(name), m_expr(std::move(expr)) {}
+VariableExpr::VariableExpr(std::string name, std::vector<std::unique_ptr<Expr>> functions) :
+    m_name(name), m_functions(std::move(functions)) {}
 void VariableExpr::accept(ExprVisitor &visitor) {
     visitor.visitVariableExpr(*this);
 }
 std::string VariableExpr::to_string() const {
-    if (m_expr.has_value()) {
-        return std::format("VariableExpr[{}, {}]", m_name, m_expr.value()->to_string());
+    std::string res { std::format("VariableExpr[{}, ", m_name) };
+    for (size_t i {0}; i < m_functions.size(); i++) {
+        res += m_functions.at(i)->to_string();
+        res += ", ";
     }
-    return std::format("VariableExpr[{}]", m_name);
+    res += "]";
+    return res;
 }
 
 ListExpr::ListExpr(std::vector<std::unique_ptr<Expr>> expressions) :
@@ -81,4 +84,31 @@ std::string ListExpr::to_string() const {
     }
     res += "]";
     return res;
+}
+
+FuncExpr::FuncExpr(std::unique_ptr<Expr> function) :
+    m_function(std::move(function)) {}
+void FuncExpr::accept(ExprVisitor &visitor) {
+    visitor.visitFuncExpr(*this);
+}
+std::string FuncExpr::to_string() const {
+    return std::format("FuncExpr[{}]", m_function->to_string());
+}
+
+AtFuncExpr::AtFuncExpr(int index) :
+    m_index(index) {}
+void AtFuncExpr::accept(ExprVisitor &visitor) {
+    visitor.visitAtFuncExpr(*this);
+}
+std::string AtFuncExpr::to_string() const {
+    return std::format("AtFuncExpr[{}]", std::to_string(m_index));
+}
+
+SubstrFuncExpr::SubstrFuncExpr(int start, int end) :
+    m_start(start), m_end(end) {}
+void SubstrFuncExpr::accept(ExprVisitor &visitor) {
+    visitor.visitSubstrFuncExpr(*this);
+}
+std::string SubstrFuncExpr::to_string() const {
+    return std::format("SubstrFuncExpr[{}, {}]", std::to_string(m_start), std::to_string(m_end));
 }

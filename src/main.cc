@@ -60,8 +60,8 @@ int main(int argc, char **argv) {
     }
     */
 
-    Interpreter interpreter { output_file_name, std::move(statements) };
-    interpreter.interpret();
+    Interpreter interpreter { output_file_name };
+    interpreter.interpret(std::move(statements));
 
     std::cout << "Data generated succesfully" << std::endl;
 

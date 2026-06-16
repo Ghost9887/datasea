@@ -13,6 +13,9 @@ class FormatExpr;
 class ValueExpr;
 class VariableExpr;
 class ListExpr;
+class FuncExpr;
+class AtFuncExpr;
+class SubstrFuncExpr;
 
 class ExprVisitor {
 public:
@@ -23,6 +26,9 @@ public:
     virtual void visitValueExpr(ValueExpr &expr) = 0;
     virtual void visitVariableExpr(VariableExpr &expr) = 0;
     virtual void visitListExpr(ListExpr &expr) = 0;
+    virtual void visitFuncExpr(FuncExpr &expr) = 0;
+    virtual void visitAtFuncExpr(AtFuncExpr &expr) = 0;
+    virtual void visitSubstrFuncExpr(SubstrFuncExpr &expr) = 0;
 	virtual ~ExprVisitor() = default;
 };
 
@@ -84,12 +90,12 @@ public:
 
 class VariableExpr : public Expr {
 public:
-    VariableExpr(std::string name, std::optional<std::unique_ptr<Expr>> expr);
+    VariableExpr(std::string name, std::vector<std::unique_ptr<Expr>> m_functions);
     void accept(ExprVisitor &visitor) override;
     std::string to_string() const override;
 public:
     std::string m_name;
-    std::optional<std::unique_ptr<Expr>> m_expr;
+    std::vector<std::unique_ptr<Expr>> m_functions;
 };
 
 class ListExpr : public Expr {
@@ -99,6 +105,35 @@ public:
     std::string to_string() const override;
 public:
     std::vector<std::unique_ptr<Expr>> m_expressions;
+};
+
+//built in functions
+class FuncExpr : public Expr {
+public:
+    FuncExpr(std::unique_ptr<Expr> function);
+    void accept(ExprVisitor &visitor) override;
+    std::string to_string() const override;
+public:
+    std::unique_ptr<Expr> m_function;
+};
+
+class AtFuncExpr : public Expr {
+public:
+    AtFuncExpr(int index);
+    void accept(ExprVisitor &visitor) override;
+    std::string to_string() const override;
+public:
+    int m_index;
+};
+
+class SubstrFuncExpr : public Expr {
+public:
+    SubstrFuncExpr(int start, int end);
+    void accept(ExprVisitor &visitor) override;
+    std::string to_string() const override;
+public:
+    int m_start;
+    int m_end;
 };
 
 #endif

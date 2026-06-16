@@ -3,13 +3,16 @@
 #include <climits>
 #include <unordered_set>
 
-Interpreter::Interpreter(std::string output_name, std::vector<std::unique_ptr<Stmnt>> statements) :
-    m_output_file("../" + output_name), m_statements(std::move(statements)) {}
+Interpreter::Interpreter(std::string output_name) :
+    m_output_file("../" + output_name) 
+{
+    m_envs.emplace_back(std::make_unique<Environment>(nullptr));
+}
 
-void Interpreter::interpret() {
+void Interpreter::interpret(std::vector<std::unique_ptr<Stmnt>> statements) {
     try {
-        for (size_t i {0}; i < m_statements.size(); i++) {
-            execute(*m_statements.at(i));
+        for (size_t i {0}; i < statements.size(); i++) {
+            execute(*statements.at(i));
         }
     }catch(const InterpretError &e) {
         std::cerr << e.what() << std::endl;
@@ -17,24 +20,25 @@ void Interpreter::interpret() {
     }
 }
 
-void Interpreter::visitRowStmnt(RowStmnt &stmnt) {
-    if (stmnt.m_count < 1) error("Rows cannot be less than 1");
-
-    for (int i {0}; i < stmnt.m_count; i++) {
+void Interpreter::visitTableStmnt(TableStmnt &stmnt) {
+    if (stmnt.m_row_count < 0) error("Row count cannot be lower than 0");
+    for (int i {0}; i < stmnt.m_row_count; i++) {
+        m_column_names.clear();
+        m_column_data.clear();
         execute(*stmnt.m_body);
+        write(build_query(stmnt.m_name));
     }
 }
 
-void Interpreter::visitTableStmnt(TableStmnt &stmnt) {
-    m_column_names.clear();
-    m_column_data.clear();
-    execute(*stmnt.m_body);
-    write(build_query(stmnt.m_name));
-}
-
 void Interpreter::visitBlockStmnt(BlockStmnt &stmnt) {
+    m_envs.emplace_back(std::make_unique<Environment>(m_envs.at(m_current_env).get()));
+    m_current_env++;
     for (size_t i {0}; i < stmnt.m_statements.size(); i++) {
         execute(*stmnt.m_statements.at(i));
+    }
+    if (m_envs.at(m_current_env)->has_parent()) {
+        m_envs.erase(m_envs.begin() + m_current_env);
+        m_current_env--;
     }
 }
 
@@ -57,17 +61,24 @@ void Interpreter::visitColumnStmnt(ColumnStmnt &stmnt) {
 
 void Interpreter::visitDeclStmnt(DeclStmnt &stmnt) {
     evaluate(*stmnt.m_expr);
-    if (m_variables.find(stmnt.m_name) == m_variables.end()) {
-        m_variables.insert({stmnt.m_name, pop()});
-    }else {
-        //allow shadowing
-        m_variables.at(stmnt.m_name) = pop();
+    if (m_envs.at(m_current_env)->insert_var(stmnt.m_name, pop())) {
+        return;
     }
+    error(std::format("Variable '{}' already exists.", stmnt.m_name)); 
 }
 
 void Interpreter::visitPrintStmnt(PrintStmnt &stmnt) {
     evaluate(*stmnt.m_expr);
     std::cout << value_to_string(pop()) << std::endl;
+}
+
+void Interpreter::visitAssignStmnt(AssignStmnt &stmnt) {
+    evaluate(*stmnt.m_expr);
+    if (m_envs.at(m_current_env)->assign_var(stmnt.m_name, pop())) {
+        return;
+    }
+
+    error(std::format("Variable '{}' does not exist", stmnt.m_name));
 }
 
 void Interpreter::visitIncrementExpr(IncrementExpr &expr) {
@@ -175,24 +186,21 @@ void Interpreter::visitValueExpr(ValueExpr &expr) {
 }
 
 void Interpreter::visitVariableExpr(VariableExpr &expr) {
-    if (m_variables.find(expr.m_name) != m_variables.end()) {
-        if (expr.m_expr.has_value()) {
-            evaluate(*expr.m_expr.value());
-            Value value { pop() };
-            if (std::holds_alternative<int>(value.m_data)) {
-                int index = std::get<int>(value.m_data);
-                if (std::holds_alternative<std::vector<Value>>(m_variables.at(expr.m_name).m_data)) {
-                    std::vector<Value> array { std::get<std::vector<Value>>(m_variables.at(expr.m_name).m_data) };
-                    if (index < static_cast<int>(array.size())) {
-                        if (index > -1) {
-                            m_column_data.push_back(array.at(index));
-                            return;
-                        }else error("Index cannot be lower than 0");
-                    }else error(std::format("Index out of bounds: {} > {}", std::to_string(index), std::to_string(array.size() - 1)));
-                }else error("Cannot index into a non list type.");
-            }else error("Index must be int.");
+    std::optional<Value> retrieved_value { m_envs.at(m_current_env)->get_var(expr.m_name) };
+    if (retrieved_value.has_value()) {
+        if (!expr.m_functions.empty()) {
+            Value temp { retrieved_value.value() };
+            for (size_t i {0}; i < expr.m_functions.size(); i++) {
+                m_column_data.push_back(temp);
+                evaluate(*expr.m_functions.at(i));
+                //only pop when we still have another function to go
+                if (i + 1 < expr.m_functions.size()) {
+                    temp = pop();
+                }
+            }
+            return;
         }else {
-            m_column_data.push_back(m_variables.at(expr.m_name));
+            m_column_data.push_back(std::move(retrieved_value.value()));
             return;
         }
     }
@@ -207,6 +215,53 @@ void Interpreter::visitListExpr(ListExpr &expr) {
         values.push_back(pop());
     }
     m_column_data.push_back(Value{ std::move(values) });
+}
+
+void Interpreter::visitFuncExpr(FuncExpr &expr) {
+    evaluate(*expr.m_function);
+}
+
+void Interpreter::visitAtFuncExpr(AtFuncExpr &expr) {
+    Value value { pop() };
+    if (std::holds_alternative<std::string>(value.m_data)) {
+        std::string str { std::get<std::string>(value.m_data) };
+        if (expr.m_index < static_cast<int>(str.size())) {
+            if (expr.m_index > -1) {
+                str = str.at(expr.m_index);
+                m_column_data.push_back(Value {std::move(str)});
+                return;
+            }else error("Index cannot be smaller than 0");
+        }else error(std::format("Index out of bounds: {} > {}", std::to_string(expr.m_index), std::to_string(str.size() - 1)));
+    }else if (std::holds_alternative<std::vector<Value>>(value.m_data)) {
+        std::vector<Value> array { std::get<std::vector<Value>>(value.m_data) };
+        if (expr.m_index < static_cast<int>(array.size())) {
+            if (expr.m_index > -1) {
+                m_column_data.push_back(Value {std::move(array.at(expr.m_index))});
+                return;
+            }else error("Index cannot be smaller than 0");
+        }else error(std::format("Index out of bounds: {} > {}", std::to_string(expr.m_index), std::to_string(array.size() - 1)));
+    }
+
+
+    error("Cannot perfom 'At' function on a non string or non list type");
+}
+
+void Interpreter::visitSubstrFuncExpr(SubstrFuncExpr &expr) {
+    Value value { pop() };
+    if (std::holds_alternative<std::string>(value.m_data)) {
+        std::string str { std::get<std::string>(value.m_data) };
+        if (expr.m_start < static_cast<int>(str.size()) &&
+                expr.m_end < static_cast<int>(str.size())) {
+            if (expr.m_start > -1 && expr.m_end > -1) {
+                str = str.substr(expr.m_start, expr.m_end - expr.m_start);
+                m_column_data.push_back(Value {std::move(str)});
+                return;
+            }else error("Index cannot be smaller than 0");
+        }else error(std::format("Index out of bounds: ({}..{}) > {}", 
+                    std::to_string(expr.m_start), std::to_string(expr.m_end), std::to_string(str.size() - 1)));
+    }
+
+    error("Cannot perfom 'Substr' function on a non string type");
 }
 
 void Interpreter::execute(Stmnt &stmnt) {

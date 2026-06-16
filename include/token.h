@@ -19,8 +19,9 @@ enum class TokenType {
 
 	TABLE, COLUMN, COUNT,
     LOCALE, RANDOM, INCREMENT,
-    FORMAT, ROWS, GEN, FIRST_NAME,
-    LAST_NAME, SEX, PRINT,
+    FORMAT, GEN, LET,
+    FIRST_NAME, LAST_NAME, 
+    SEX, PRINT, AT, SUBSTR, 
 
 	UKNOWN
 };
@@ -37,11 +38,12 @@ inline static const std::unordered_map<TokenType, std::string> tokens_map = {
 	{TokenType::STRING, "String"}, {TokenType::INT, "Int"},
     {TokenType::DOUBLE, "Double"}, {TokenType::BOOL, "Bool"}, 
     {TokenType::IDENTIFIER, "Identifier"}, {TokenType::_NULL, "Null"},
+    {TokenType::AT, "At"}, {TokenType::SUBSTR, "Substr"},
 
 	{TokenType::TABLE, "Table"}, {TokenType::COLUMN, "Column"},
 	{TokenType::COUNT, "Count"}, {TokenType::INCREMENT, "Increment"},
     {TokenType::RANDOM, "Random"}, {TokenType::FORMAT, "Format"},
-    {TokenType::ROWS, "Rows"}, {TokenType::GEN, "Gen"}, 
+    {TokenType::GEN, "Gen"}, {TokenType::LET, "Let"}, 
     {TokenType::FIRST_NAME, "First_Name"}, {TokenType::LAST_NAME, "Last_Name"},
     {TokenType::SEX, "Sex"}, {TokenType::PRINT, "Print"},
 
@@ -55,8 +57,9 @@ inline static const std::unordered_map<std::string, TokenType> keywords_map = {
     {"count", TokenType::COUNT}, {"boolean", TokenType::BOOL},
     {"increment", TokenType::INCREMENT}, {"random", TokenType::RANDOM},
     {"locale", TokenType::LOCALE}, {"format", TokenType::FORMAT},
-    {"rows", TokenType::ROWS}, {"gen", TokenType::GEN}, {"firstname", TokenType::FIRST_NAME},
+    {"gen", TokenType::GEN}, {"let", TokenType::LET}, {"firstname", TokenType::FIRST_NAME},
     {"lastname", TokenType::LAST_NAME}, {"sex", TokenType::SEX}, {"print", TokenType::PRINT},
+    {"at", TokenType::AT}, {"substr", TokenType::SUBSTR}
 };
 
 class Token {

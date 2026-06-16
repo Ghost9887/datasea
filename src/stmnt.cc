@@ -1,21 +1,12 @@
 #include <stmnt.h>
 
-RowStmnt::RowStmnt(int count, std::unique_ptr<Stmnt> body) :
-    m_count(count), m_body(std::move(body)) {}
-void RowStmnt::accept(StmntVisitor &visitor) {
-    visitor.visitRowStmnt(*this);
-}
-std::string RowStmnt::to_string() const {
-    return std::format("RowStmnt[{}, {}]", std::to_string(m_count), m_body->to_string());
-}
-
-TableStmnt::TableStmnt(std::string name, std::unique_ptr<Stmnt> body) :
-	m_name(std::move(name)), m_body(std::move(body)) {}
+TableStmnt::TableStmnt(std::string name, int row_count, std::unique_ptr<Stmnt> body) :
+	m_name(std::move(name)), m_row_count(row_count), m_body(std::move(body)) {}
 void TableStmnt::accept(StmntVisitor &visitor) {
 	visitor.visitTableStmnt(*this);
 }
 std::string TableStmnt::to_string() const {
-	return std::format("TableStmnt[{}, {}]", m_name, m_body->to_string());
+	return std::format("TableStmnt[{}, {}, {}]", m_name, std::to_string(m_row_count), m_body->to_string());
 }
 
 BlockStmnt::BlockStmnt(std::vector<std::unique_ptr<Stmnt>> statements) :
@@ -67,4 +58,13 @@ void PrintStmnt::accept(StmntVisitor &visitor) {
 }
 std::string PrintStmnt::to_string() const {
     return std::format("PrintStmnt[{}]", m_expr->to_string());
+}
+
+AssignStmnt::AssignStmnt(std::string name, std::unique_ptr<Expr> expr) :
+    m_name(std::move(name)), m_expr(std::move(expr)) {}
+void AssignStmnt::accept(StmntVisitor &visitor) {
+    visitor.visitAssignStmnt(*this);
+}
+std::string AssignStmnt::to_string() const {
+    return std::format("AssignStmnt[{}, {}]", m_name, m_expr->to_string());
 }

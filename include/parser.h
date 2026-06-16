@@ -17,10 +17,11 @@ private:
 	std::unique_ptr<Stmnt> parse_table();
 	std::unique_ptr<Stmnt> parse_block();
     std::unique_ptr<Stmnt> parse_locale();
-    std::unique_ptr<Stmnt> parse_rows();
     std::unique_ptr<Stmnt> parse_column();
     std::unique_ptr<Stmnt> parse_decl();
     std::unique_ptr<Stmnt> parse_print();
+    std::unique_ptr<Stmnt> parse_assign();
+
 	std::unique_ptr<Expr> expression();
     std::unique_ptr<Expr> parse_increment();
     std::unique_ptr<Expr> parse_random();
@@ -29,6 +30,9 @@ private:
     std::unique_ptr<Expr> parse_value();
     std::unique_ptr<Expr> parse_variable();
     std::unique_ptr<Expr> parse_list();
+    std::unique_ptr<Expr> func_expression();
+    std::unique_ptr<Expr> parse_at_func();
+    std::unique_ptr<Expr> parse_substr_func();
 	template<typename... TokenTypes>
 	bool match(TokenTypes... types);
 	std::optional<std::reference_wrapper<Token>> peek();
