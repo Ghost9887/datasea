@@ -33,6 +33,8 @@ private:
     std::unique_ptr<Expr> func_expression();
     std::unique_ptr<Expr> parse_at_func();
     std::unique_ptr<Expr> parse_substr_func();
+    std::unique_ptr<Expr> parse_lower_func();
+    std::unique_ptr<Expr> parse_upper_func();
 	template<typename... TokenTypes>
 	bool match(TokenTypes... types);
 	std::optional<std::reference_wrapper<Token>> peek();

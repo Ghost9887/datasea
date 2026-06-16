@@ -16,6 +16,8 @@ class ListExpr;
 class FuncExpr;
 class AtFuncExpr;
 class SubstrFuncExpr;
+class LowerFuncExpr;
+class UpperFuncExpr;
 
 class ExprVisitor {
 public:
@@ -29,6 +31,8 @@ public:
     virtual void visitFuncExpr(FuncExpr &expr) = 0;
     virtual void visitAtFuncExpr(AtFuncExpr &expr) = 0;
     virtual void visitSubstrFuncExpr(SubstrFuncExpr &expr) = 0;
+    virtual void visitLowerFuncExpr(LowerFuncExpr &expr) = 0;
+    virtual void visitUpperFuncExpr(UpperFuncExpr &expr) = 0;
 	virtual ~ExprVisitor() = default;
 };
 
@@ -134,6 +138,20 @@ public:
 public:
     int m_start;
     int m_end;
+};
+
+class LowerFuncExpr : public Expr {
+public:
+    LowerFuncExpr() = default;
+    void accept(ExprVisitor &visitor) override;
+    std::string to_string() const override;
+};
+
+class UpperFuncExpr : public Expr {
+public:
+    UpperFuncExpr() = default;
+    void accept(ExprVisitor &visitor) override;
+    std::string to_string() const override;
 };
 
 #endif

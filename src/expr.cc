@@ -112,3 +112,17 @@ void SubstrFuncExpr::accept(ExprVisitor &visitor) {
 std::string SubstrFuncExpr::to_string() const {
     return std::format("SubstrFuncExpr[{}, {}]", std::to_string(m_start), std::to_string(m_end));
 }
+
+void LowerFuncExpr::accept(ExprVisitor &visitor) {
+    visitor.visitLowerFuncExpr(*this);
+}
+std::string LowerFuncExpr::to_string() const {
+    return "LowerFuncExpr[]";
+}
+
+void UpperFuncExpr::accept(ExprVisitor &visitor) {
+    visitor.visitUpperFuncExpr(*this);
+}
+std::string UpperFuncExpr::to_string() const {
+    return "UpperFuncExpr[]";
+}

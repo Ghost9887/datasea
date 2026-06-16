@@ -2,6 +2,7 @@
 #include <random>
 #include <climits>
 #include <unordered_set>
+#include <algorithm>
 
 Interpreter::Interpreter(std::string output_name) :
     m_output_file("../" + output_name) 
@@ -121,7 +122,7 @@ void Interpreter::visitGenExpr(GenExpr &expr) {
                 m_column_data.push_back(Value{ cache_data(cached_data, "sex", TokenType::SEX) });
             };break;
             case TokenType::BOOL: {
-                m_column_data.push_back(Value{ generate_random_int(0, 1) == 0 ? "FALSE" : "TRUE" }); 
+                m_column_data.push_back(Value{ generate_random_int(0, 1) == 0 ? false : true }); 
             }; break;
             default:  
                 //should be unreachable
@@ -135,50 +136,22 @@ void Interpreter::visitFormatExpr(FormatExpr &expr) {
         m_column_data.push_back(Value{ expr.m_pattern });
         return;
     }
-
-    for (size_t i {0}; i < expr.m_variables.size(); i++) {
-        evaluate(*expr.m_variables.at(i));
+    size_t index {0};
+    size_t arg_counter {0};
+    std::string res { "'" };
+    while(index < expr.m_pattern.size()) {
+        char c { expr.m_pattern.at(index++) };
+        if (c == '"') break;
+        if (c == '{' && index < expr.m_pattern.size() && expr.m_pattern.at(index) == '}') {
+            if (arg_counter >= expr.m_variables.size()) error("Too many arguments in format.");
+            evaluate(*expr.m_variables.at(arg_counter++));
+            res += pop_as_str();
+            //skip the }
+            index++;
+        }else res += c;
     }
-
-    switch (expr.m_variables.size()) {
-        case 1: {
-            m_column_data.push_back(
-                Value {
-                    std::vformat(expr.m_pattern, 
-                        std::make_format_args(pop_as_str()))
-                });
-        };break;
-        case 2: {
-            m_column_data.push_back(
-                Value {
-                    std::vformat(expr.m_pattern, 
-                        std::make_format_args(pop_as_str(), pop_as_str()))
-                });
-        };break;
-        case 3: {
-            m_column_data.push_back(
-                Value {
-                    std::vformat(expr.m_pattern, 
-                        std::make_format_args(pop_as_str(), pop_as_str(), pop_as_str()))
-                });
-        };break;
-        case 4: {
-            m_column_data.push_back(
-                Value {
-                    std::vformat(expr.m_pattern, 
-                        std::make_format_args(pop_as_str(), pop_as_str(), pop_as_str(), pop_as_str()))
-                });
-        };break;
-        case 5: {
-            m_column_data.push_back(
-                Value {
-                    std::vformat(expr.m_pattern, 
-                        std::make_format_args(pop_as_str(), pop_as_str(), pop_as_str(), pop_as_str(), pop_as_str()))
-                    });
-        };break;
-        //should be unreachable
-        default: error("Too many format args: max is 5");
-    }
+    res += '\'';
+    m_column_data.push_back(Value {std::move(res)});
 }
 
 void Interpreter::visitValueExpr(ValueExpr &expr) {
@@ -223,7 +196,7 @@ void Interpreter::visitFuncExpr(FuncExpr &expr) {
 
 void Interpreter::visitAtFuncExpr(AtFuncExpr &expr) {
     Value value { pop() };
-    if (std::holds_alternative<std::string>(value.m_data)) {
+    if (is_string(value)) {
         std::string str { std::get<std::string>(value.m_data) };
         if (expr.m_index < static_cast<int>(str.size())) {
             if (expr.m_index > -1) {
@@ -232,7 +205,7 @@ void Interpreter::visitAtFuncExpr(AtFuncExpr &expr) {
                 return;
             }else error("Index cannot be smaller than 0");
         }else error(std::format("Index out of bounds: {} > {}", std::to_string(expr.m_index), std::to_string(str.size() - 1)));
-    }else if (std::holds_alternative<std::vector<Value>>(value.m_data)) {
+    }else if (is_list(value)) {
         std::vector<Value> array { std::get<std::vector<Value>>(value.m_data) };
         if (expr.m_index < static_cast<int>(array.size())) {
             if (expr.m_index > -1) {
@@ -248,7 +221,7 @@ void Interpreter::visitAtFuncExpr(AtFuncExpr &expr) {
 
 void Interpreter::visitSubstrFuncExpr(SubstrFuncExpr &expr) {
     Value value { pop() };
-    if (std::holds_alternative<std::string>(value.m_data)) {
+    if (is_string(value)) {
         std::string str { std::get<std::string>(value.m_data) };
         if (expr.m_start < static_cast<int>(str.size()) &&
                 expr.m_end < static_cast<int>(str.size())) {
@@ -261,7 +234,31 @@ void Interpreter::visitSubstrFuncExpr(SubstrFuncExpr &expr) {
                     std::to_string(expr.m_start), std::to_string(expr.m_end), std::to_string(str.size() - 1)));
     }
 
-    error("Cannot perfom 'Substr' function on a non string type");
+    error("Cannot perform 'Substr' function on a non string type");
+}
+
+void Interpreter::visitLowerFuncExpr([[maybe_unused]]LowerFuncExpr &expr) {
+    Value value { pop() };
+    if (is_string(value)) {
+        std::string str { std::get<std::string>(value.m_data) };
+        std::transform(str.begin(), str.end(), str.begin(), ::tolower);
+        m_column_data.push_back(Value {std::move(str)});
+        return;
+    }
+
+    error ("Cannot perform 'Lower' function on a non string type");
+}
+
+void Interpreter::visitUpperFuncExpr([[maybe_unused]]UpperFuncExpr &expr) {
+    Value value { pop() };
+    if (is_string(value)) {
+        std::string str { std::get<std::string>(value.m_data) };
+        std::transform(str.begin(), str.end(), str.begin(), ::toupper);
+        m_column_data.push_back(Value {std::move(str)});
+        return;
+    }
+
+    error ("Cannot perform 'Upper' function on a non string type");
 }
 
 void Interpreter::execute(Stmnt &stmnt) {
@@ -316,7 +313,15 @@ std::string Interpreter::build_query(const std::string &table_name) {
     }
     query += ") VALUES (";
     for (size_t i {0}; i < m_column_data.size(); i++) {
+        if (is_string(m_column_data.at(i))) {
+            std::string &str { std::get<std::string>(m_column_data.at(i).m_data) };
+            if (!str.starts_with("'")) {
+                query += std::format("'{}'", str);
+                goto comma_check;
+            }
+        }
         query += value_to_string(m_column_data.at(i));
+        comma_check:
         if (i + 1 < m_column_data.size()) query += ", ";
     }
     query += ");\n";
@@ -325,6 +330,22 @@ std::string Interpreter::build_query(const std::string &table_name) {
 
 void Interpreter::write(const std::string &content) {
     m_output_file << content;
+}
+
+bool Interpreter::is_string(const Value &value) {
+    return std::holds_alternative<std::string>(value.m_data);
+}
+
+bool Interpreter::is_int(const Value &value) {  
+    return std::holds_alternative<int>(value.m_data);
+}
+
+bool Interpreter::is_bool(const Value &value) {
+    return std::holds_alternative<bool>(value.m_data);
+}
+
+bool Interpreter::is_list(const Value &value) {
+    return std::holds_alternative<std::vector<Value>>(value.m_data);
 }
 
 [[noreturn]]

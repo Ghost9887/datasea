@@ -22,6 +22,7 @@ enum class TokenType {
     FORMAT, GEN, LET,
     FIRST_NAME, LAST_NAME, 
     SEX, PRINT, AT, SUBSTR, 
+    LOWER, UPPER,
 
 	UKNOWN
 };
@@ -39,6 +40,7 @@ inline static const std::unordered_map<TokenType, std::string> tokens_map = {
     {TokenType::DOUBLE, "Double"}, {TokenType::BOOL, "Bool"}, 
     {TokenType::IDENTIFIER, "Identifier"}, {TokenType::_NULL, "Null"},
     {TokenType::AT, "At"}, {TokenType::SUBSTR, "Substr"},
+    {TokenType::LOWER, "Lower"}, {TokenType::UPPER, "Upper"},
 
 	{TokenType::TABLE, "Table"}, {TokenType::COLUMN, "Column"},
 	{TokenType::COUNT, "Count"}, {TokenType::INCREMENT, "Increment"},
@@ -59,7 +61,8 @@ inline static const std::unordered_map<std::string, TokenType> keywords_map = {
     {"locale", TokenType::LOCALE}, {"format", TokenType::FORMAT},
     {"gen", TokenType::GEN}, {"let", TokenType::LET}, {"firstname", TokenType::FIRST_NAME},
     {"lastname", TokenType::LAST_NAME}, {"sex", TokenType::SEX}, {"print", TokenType::PRINT},
-    {"at", TokenType::AT}, {"substr", TokenType::SUBSTR}
+    {"at", TokenType::AT}, {"substr", TokenType::SUBSTR}, {"lower", TokenType::LOWER},
+    {"upper", TokenType::UPPER},
 };
 
 class Token {

@@ -34,6 +34,8 @@ private:
     void visitFuncExpr(FuncExpr &expr) override;
     void visitAtFuncExpr(AtFuncExpr &expr) override;
     void visitSubstrFuncExpr(SubstrFuncExpr &expr) override;
+    void visitLowerFuncExpr(LowerFuncExpr &expr) override;
+    void visitUpperFuncExpr(UpperFuncExpr &expr) override;
 
     void execute(Stmnt &stmnt);
     void evaluate(Expr &expr);
@@ -43,6 +45,10 @@ private:
     std::string cache_data(CachedData &cached_data, std::string &&file_name, TokenType type);
     std::string build_query(const std::string &table_name);
     void write(const std::string &content);
+    bool is_string(const Value &value);
+    bool is_int(const Value &value); 
+    bool is_bool(const Value &value);
+    bool is_list(const Value &value);
     [[noreturn]]
     void error(const std::string &message);
 private:

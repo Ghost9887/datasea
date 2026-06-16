@@ -153,22 +153,15 @@ std::unique_ptr<Expr> Parser::parse_gen() {
 }
 
 std::unique_ptr<Expr> Parser::parse_format() {
-    constexpr size_t MAX_ARGUMENTS { 5 };
-    size_t counter { 0 };
-
     consume(TokenType::LPAREN, "Expected '('.");
     consume(TokenType::STRING, "Expected pattern'.");
     std::string pattern { std::get<std::string>(previous().m_value.m_data) };
     std::vector<std::unique_ptr<Expr>> arguments {};
     if(match(TokenType::COMMA)) {
         while (true) {
-            if (counter >= MAX_ARGUMENTS) {
-                error("Too many format arguments [max is 5].");
-            }
             arguments.push_back(expression());
             if (match(TokenType::RPAREN)) break;
             else consume(TokenType::COMMA, "Expected ','.");
-            counter++;
         }
         return std::make_unique<FormatExpr>(std::move(pattern), std::move(arguments));
     }
@@ -211,6 +204,8 @@ std::unique_ptr<Expr> Parser::parse_list() {
 std::unique_ptr<Expr> Parser::func_expression() {
     if (match(TokenType::AT)) return parse_at_func();
     else if (match(TokenType::SUBSTR)) return parse_substr_func();
+    else if (match(TokenType::LOWER)) return parse_lower_func();
+    else if (match(TokenType::UPPER)) return parse_upper_func();
 
     error("Expected function expression");
 }
@@ -232,6 +227,18 @@ std::unique_ptr<Expr> Parser::parse_substr_func() {
     int end { std::get<int>(previous().m_value.m_data) };
     consume(TokenType::RPAREN, "Expected ')'.");
     return std::make_unique<SubstrFuncExpr>(start, end);
+}
+
+std::unique_ptr<Expr> Parser::parse_lower_func() {
+    consume(TokenType::LPAREN, "Expected '('.");
+    consume(TokenType::RPAREN, "Expected ')'.");
+    return std::make_unique<LowerFuncExpr>();
+}
+
+std::unique_ptr<Expr> Parser::parse_upper_func() {
+    consume(TokenType::LPAREN, "Expected '('.");
+    consume(TokenType::RPAREN, "Expected ')'.");
+    return std::make_unique<UpperFuncExpr>();
 }
 
 template<typename... TokenTypes>
