@@ -1,5 +1,4 @@
-# Datasea
-![License](https://img.shields.io/badge/license-MIT-blue)
+# Datasea ![License](https://img.shields.io/badge/license-MIT-blue)
 
 [STILL A WORK IN PROGRESS]
 
