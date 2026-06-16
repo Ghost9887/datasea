@@ -18,3 +18,15 @@ target_include_directories(datasea
 )
 
 target_compile_options(datasea PRIVATE -Wall -Wextra -Wpedantic)
+
+configure_file(
+    ${CMAKE_SOURCE_DIR}/config.h.in
+    ${CMAKE_BINARY_DIR}/config.h
+)
+
+target_include_directories(datasea PRIVATE ${CMAKE_BINARY_DIR})
+
+install(TARGETS datasea RUNTIME DESTINATION bin)
+
+install(DIRECTORY ${CMAKE_SOURCE_DIR}/data
+        DESTINATION share/datasea)

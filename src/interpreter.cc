@@ -3,9 +3,10 @@
 #include <climits>
 #include <unordered_set>
 #include <algorithm>
+#include <config.h>
 
 Interpreter::Interpreter(std::string output_name) :
-    m_output_file("../" + output_name) 
+    m_output_file(output_name) 
 {
     m_envs.emplace_back(std::make_unique<Environment>(nullptr));
 }
@@ -49,7 +50,7 @@ void Interpreter::visitLocaleStmnt(LocaleStmnt &stmnt) {
     };
 
     if (locales_set.find(stmnt.m_locale) != locales_set.end()) {
-        m_locale = std::format("../data/{}/", stmnt.m_locale);
+        m_locale = std::format("{}/{}/", DATA_DIR, stmnt.m_locale);
     }else {
         error(std::format("Locale '{}' does not exist", stmnt.m_locale));
     }
