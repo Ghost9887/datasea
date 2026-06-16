@@ -16,3 +16,10 @@ cd datasea
 cmake -B build -DCMAKE_BUILD_TYPE=Release
 cmake --build build
 sudo cmake --install build
+```
+
+### EXAMPLES
+1. Simple users table
+```
+
+```
