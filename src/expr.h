@@ -60,31 +60,31 @@ public:
 
 class RandintExpr : public Expr {
 public:
-    RandintExpr(int start, std::optional<int> end);
+    RandintExpr(std::unique_ptr<Expr> start, std::optional<std::unique_ptr<Expr>> end);
     void accept(ExprVisitor &visitor) override;
     std::string to_string() const override;
 public:
-    int m_start;
-    std::optional<int> m_end;
+    std::unique_ptr<Expr> m_start;
+    std::optional<std::unique_ptr<Expr>> m_end;
 };
 
 class RandboolExpr : public Expr {
 public:
-    RandboolExpr(double weight);
+    RandboolExpr(std::unique_ptr<Expr> weight);
     void accept(ExprVisitor &visitor) override;
     std::string to_string() const override;
 public:
-    double m_weight;
+    std::unique_ptr<Expr> m_weight;
 };
 
 class RanddoubleExpr : public Expr {
 public:
-    RanddoubleExpr(double start, std::optional<double> end);
+    RanddoubleExpr(std::unique_ptr<Expr> start, std::optional<std::unique_ptr<Expr>> end);
     void accept(ExprVisitor &visitor) override;
     std::string to_string() const override;
 public:
-    double m_start;
-    std::optional<double> m_end;
+    std::unique_ptr<Expr> m_start;
+    std::optional<std::unique_ptr<Expr>> m_end;
 };
 
 class GenExpr : public Expr {

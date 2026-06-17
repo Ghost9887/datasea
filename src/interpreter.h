@@ -53,6 +53,7 @@ private:
     bool is_int(const Value &value); 
     bool is_bool(const Value &value);
     bool is_list(const Value &value);
+    bool is_double(const Value &value);
     [[noreturn]]
     void error(const std::string &message);
 private:

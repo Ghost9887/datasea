@@ -132,38 +132,37 @@ std::unique_ptr<Expr> Parser::parse_increment() {
 
 std::unique_ptr<Expr> Parser::parse_randint() {
     consume(TokenType::LPAREN, "Expected '('.");
-    consume(TokenType::INT, "Expected 'start'.");
-    int start { std::get<int>(previous().m_value.m_data) };
+    std::unique_ptr<Expr> start { expression() };
     consume(TokenType::DOUBLE_DOT, "Expected '..'.");
-    std::optional<int> end { std::nullopt };
-    if (match(TokenType::INT)) {
-        end = std::get<int>(previous().m_value.m_data);
+    std::optional<std::unique_ptr<Expr>> end { std::nullopt };
+    if (peek().has_value() && peek().value().get().m_type != TokenType::RPAREN) {
+        end = expression();
     }
     consume(TokenType::RPAREN, "Expected ')'.");
-    return std::make_unique<RandintExpr>(start, end);
+    return std::make_unique<RandintExpr>(std::move(start), std::move(end));
 }
 
 std::unique_ptr<Expr> Parser::parse_randbool() {
     consume(TokenType::LPAREN, "Expected '('.");
-    double weight { 0.5 };
-    if (match(TokenType::DOUBLE)) {
-        weight = std::get<double>(previous().m_value.m_data);
+    if (peek().has_value() && peek().value().get().m_type != TokenType::RPAREN) {
+        std::unique_ptr<Expr> weight { expression() };
+        consume(TokenType::RPAREN, "Expected ')'.");
+        return std::make_unique<RandboolExpr>(std::move(weight));
     }
     consume(TokenType::RPAREN, "Expected ')'.");
-    return std::make_unique<RandboolExpr>(weight);
+    return std::make_unique<RandboolExpr>(std::make_unique<ValueExpr>(Value{0.5}));
 }
 
 std::unique_ptr<Expr> Parser::parse_randdouble() {
     consume(TokenType::LPAREN, "Expected '('.");
-    consume(TokenType::DOUBLE, "Expected 'start'.");
-    double start { std::get<double>(previous().m_value.m_data) };
+    std::unique_ptr<Expr> start { expression() };
     consume(TokenType::DOUBLE_DOT, "Expected '..'.");
-    std::optional<double> end { std::nullopt };
-    if (match(TokenType::DOUBLE)) {
-        end = std::get<double>(previous().m_value.m_data);
+    std::optional<std::unique_ptr<Expr>> end { std::nullopt };
+    if (peek().has_value() && peek().value().get().m_type != TokenType::RPAREN) {
+        end = expression();
     }
     consume(TokenType::RPAREN, "Expected ')'.");
-    return std::make_unique<RanddoubleExpr>(start, end);
+    return std::make_unique<RanddoubleExpr>(std::move(start), std::move(end));
 }
 
 std::unique_ptr<Expr> Parser::parse_gen() {

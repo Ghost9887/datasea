@@ -95,20 +95,45 @@ void Interpreter::visitIncrementExpr(IncrementExpr &expr) {
 }
 
 void Interpreter::visitRandintExpr(RandintExpr &expr) {
-    int max = expr.m_end.has_value() ? expr.m_end.value() : std::numeric_limits<int>::max();
+    evaluate(*expr.m_start);
+    Value start_val { pop() };
+    Value end_val { std::numeric_limits<int>::max() };
 
-    
-    m_column_data.push_back(Value{ generate_random_int(expr.m_start, max) }); 
+    if (expr.m_end.has_value()) {
+        evaluate(*expr.m_end.value());
+        end_val = pop();
+    }
+
+    if (!is_int(start_val) || !is_int(end_val)) error("Randint parameters must be integers"); 
+
+    m_column_data.push_back(Value{ 
+        generate_random_int(std::get<int>(start_val.m_data), std::get<int>(end_val.m_data)) 
+    }); 
 }
 
 void Interpreter::visitRandboolExpr(RandboolExpr &expr) {
-    m_column_data.push_back(Value{ generate_random_bool(expr.m_weight) });
+    evaluate(*expr.m_weight);
+    Value weight_val { pop() };
+    if (!is_double(weight_val)) error("Randbool parameter must be a double");
+    
+    m_column_data.push_back(Value{ generate_random_bool(std::get<double>(weight_val.m_data)) });
 }
 
 void Interpreter::visitRanddoubleExpr(RanddoubleExpr &expr) {
-    double max = expr.m_end.has_value() ? expr.m_end.value() : std::numeric_limits<double>::max();
+    evaluate(*expr.m_start);
+    Value start_val { pop() };
+    Value end_val { std::numeric_limits<double>::max() };
 
-    m_column_data.push_back(Value{ generate_random_double(expr.m_start, max) });
+    if (expr.m_end.has_value()) {
+        evaluate(*expr.m_end.value());
+        end_val = pop();
+    }
+    if (!is_double(start_val) || !is_double(end_val)) error("Randdouble parameters must be doubles");   
+
+    m_column_data.push_back(Value{ generate_random_double
+        (std::get<double>(start_val.m_data), std::get<double>(end_val.m_data)) 
+    });
+
 }
 
 void Interpreter::visitGenExpr(GenExpr &expr) {
@@ -405,6 +430,10 @@ bool Interpreter::is_bool(const Value &value) {
 
 bool Interpreter::is_list(const Value &value) {
     return std::holds_alternative<std::vector<Value>>(value.m_data);
+}
+
+bool Interpreter::is_double(const Value &value) {
+    return std::holds_alternative<double>(value.m_data);
 }
 
 [[noreturn]]

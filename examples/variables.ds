@@ -9,14 +9,22 @@ print(first_name.substr(0..2)); //end is exclusive
 
 print(last_name);
 
-let age = randint(0..100);
+let start = 0;
+let end = 100;
+let age = randint(start..end);
 print(age);
 
 let temp = 1.224;
 print(temp);
 
+let start_temp = -10.25;
+let end_temp = 200.50;
+let temp2 = randdouble(start_temp..end_temp);
+print(temp2);
+
 //80% chance to return true
-let active = randbool(0.8);
+let chance = 0.8;
+let active = randbool(chance);
 print(active);
 
 let users = [["Nested"], "Adam", "Felix", "Carol", "Karen", "Jacob"];

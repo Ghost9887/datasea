@@ -12,37 +12,37 @@ std::string IncrementExpr::to_string() const {
     return std::format("IncrementExpr[{}..]", std::to_string(m_start));
 }
 
-RandintExpr::RandintExpr(int start, std::optional<int> end) :
-    m_start(start), m_end(end) {}
+RandintExpr::RandintExpr(std::unique_ptr<Expr> start, std::optional<std::unique_ptr<Expr>> end) :
+    m_start(std::move(start)), m_end(std::move(end)) {}
 void RandintExpr::accept(ExprVisitor &visitor) {
     visitor.visitRandintExpr(*this);
 }
 std::string RandintExpr::to_string() const {
     if (m_end.has_value()) {
-        return std::format("RandomExpr[{}..{}]", std::to_string(m_start), std::to_string(m_end.value()));
+        return std::format("RandomExpr[{}..{}]", m_start->to_string(), m_end.value()->to_string());
     }
-    return std::format("RandomExpr[{}..]", std::to_string(m_start));
+    return std::format("RandomExpr[{}..]", m_start->to_string());
 }
 
-RandboolExpr::RandboolExpr(double weight) :
-    m_weight(weight) {}
+RandboolExpr::RandboolExpr(std::unique_ptr<Expr> weight) :
+    m_weight(std::move(weight)) {}
 void RandboolExpr::accept(ExprVisitor &visitor) {
     visitor.visitRandboolExpr(*this);
 }
 std::string RandboolExpr::to_string() const {
-    return std::format("RandboolExpr[{}]", std::to_string(m_weight));
+    return std::format("RandboolExpr[{}]", m_weight->to_string());
 }
 
-RanddoubleExpr::RanddoubleExpr(double start, std::optional<double> end) :
-    m_start(start), m_end(end) {}
+RanddoubleExpr::RanddoubleExpr(std::unique_ptr<Expr> start, std::optional<std::unique_ptr<Expr>> end) :
+    m_start(std::move(start)), m_end(std::move(end)) {}
 void RanddoubleExpr::accept(ExprVisitor &visitor) {
     visitor.visitRanddoubleExpr(*this);
 }
 std::string RanddoubleExpr::to_string() const {
     if (m_end.has_value()) {
-        return std::format("RanddoubleExpr[{}, {}]", m_start, m_end.value());
+        return std::format("RanddoubleExpr[{}, {}]", m_start->to_string(), m_end.value()->to_string());
     }
-    return std::format("RanddoubleExpr[{}]", m_start);
+    return std::format("RanddoubleExpr[{}]", m_start->to_string());
 }
 
 GenExpr::GenExpr(TokenType type) :
