@@ -1,0 +1,11 @@
+locale("us");
+
+print(gen(_firstname));
+print(gen(_lastname));
+print(gen(_city));
+print(gen(_state));
+print(gen(_streetname));
+print(gen(_jobtitle));
+print(gen(_department));
+print(gen(_company));
+print(gen(_sex));
