@@ -20,5 +20,5 @@ table("users", 10) {
     //this wraps back around to zero one the limit is reached
     column("state", state.at(increment(0..3)));
 
-    column("score", randdouble(0.0..100.0));
+    column("score", format("{.2}", randdouble(0.0..100.0)));
 }

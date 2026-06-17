@@ -198,12 +198,26 @@ void Interpreter::visitFormatExpr(FormatExpr &expr) {
             }
             if (arg_counter >= expr.m_variables.size()) error("Too many arguments in format.");
             evaluate(*expr.m_variables.at(arg_counter++));
-            std::string str { pop_as_str() };
-            if (!padding.empty() && padding.size() != str.size()) {
-                if (padding.size() > str.size()) {
-                    res += padding.replace(padding.size() - str.size(), str.size(), str);
-                }else error("Generated string is bigger than the formated padding");
-            }else res += str;
+            if (!padding.empty()) {
+                //decimal number format
+                if (padding.at(0) == '.') {
+                    Value value { pop() };
+                    if (!is_double(value)) error("Argument must be a decimal number");
+                    std::string str { std::to_string(std::get<double>(value.m_data)) };
+                    if (std::isdigit(padding.at(1))) {
+                        int length { std::stoi(std::format("{}", padding.at(1))) };
+                        if (length > 0) {
+                            res += str.substr(0, str.find(".") + length + 1);
+                        }else error("Length cannot be smaller than 0");
+                    }else error("Expected length after . in format");
+                //padding format
+                }else{ 
+                    std::string str { pop_as_str() };
+                    if (padding.size() >= str.size()) {
+                        res += padding.replace(padding.size() - str.size(), str.size(), str);
+                    }else error("Generated string is bigger than the formated padding");
+                }
+            }else res += pop_as_str();
             index++;
         }else res += c;
     }
