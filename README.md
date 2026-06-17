@@ -79,6 +79,9 @@ table("users", 10) {
     //format also supports padding e.g.: format({0000}, 10) -> 0010
     column("created_at", format("{0000}/{00}/{00}", randint(2000..2026), randint(1..12), randm(1..30)));
 
+    //format also supports decimal truncate
+    column("score_truncated", format("{.2}", randdouble(0.0...100.5)));
+
     //you can also put raw values into a column that will never change
     column("constant", "THIS NEVER CHANGES");
 }
