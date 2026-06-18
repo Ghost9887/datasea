@@ -1,31 +1,32 @@
 #include <parser.h>
+#include <datasea.h>
 
 Parser::Parser(std::vector<Token> tokens) :
 	m_tokens(std::move(tokens)) {}
 
 std::vector<std::unique_ptr<Stmnt>> Parser::parse() {
 	std::vector<std::unique_ptr<Stmnt>> statements {};
-	try {
-		while (m_ip < m_tokens.size()) {
-			statements.push_back(statement());
-		}
-		return statements;
-	} catch(const ParseError &e) {
-		std::cerr << e.what() << std::endl;
-        std::exit(1);
-	}
+    while (m_ip < m_tokens.size()) {
+        statements.push_back(statement());
+    }
+    return statements;
 }
 
 std::unique_ptr<Stmnt> Parser::statement() {
-	if (match(TokenType::TABLE)) return parse_table();
-	else if (match(TokenType::LBRACE)) return parse_block();
-    else if (match(TokenType::LOCALE)) return parse_locale();
-    else if (match(TokenType::COLUMN)) return parse_column();
-    else if (match(TokenType::LET)) return parse_decl();
-    else if (match(TokenType::PRINT)) return parse_print();
-    else if (match(TokenType::IDENTIFIER)) return parse_assign();
+    try {
+        if (match(TokenType::TABLE)) return parse_table();
+        else if (match(TokenType::LBRACE)) return parse_block();
+        else if (match(TokenType::LOCALE)) return parse_locale();
+        else if (match(TokenType::COLUMN)) return parse_column();
+        else if (match(TokenType::LET)) return parse_decl();
+        else if (match(TokenType::PRINT)) return parse_print();
+        else if (match(TokenType::IDENTIFIER)) return parse_assign();
 
-	error("Expected statement");
+        error("Expected statement");
+    }catch(const ParseError &e) {
+        synchronize();
+        return nullptr;
+    }
 }
 
 
@@ -296,12 +297,28 @@ void Parser::consume(TokenType type, const std::string &message) {
 	error(message);
 }
 
+void Parser::synchronize() {
+    advance();
+    while (m_ip < m_tokens.size()) {
+        if (previous().m_type == TokenType::SEMICOLON) return;
+
+        switch (peek().value().get().m_type) {
+            case TokenType::TABLE:
+            case TokenType::LBRACE:
+            case TokenType::LOCALE:
+            case TokenType::COLUMN:
+            case TokenType::LET:
+            case TokenType::PRINT:
+            case TokenType::IDENTIFIER:
+                return;
+            default: break;
+        }
+        advance();
+    }
+}
+
 [[noreturn]]
 void Parser::error(const std::string &message) {
-	Token &token = previous();
-	throw ParseError(std::format("{}  [line: {}, column: {}]",
-		message,
-		token.m_line,
-		token.m_column
-	));
+    Datasea::error(peek().value().get(), message);
+    throw ParseError(message);
 }

@@ -10,9 +10,8 @@ enum class TokenType {
 	LPAREN, RPAREN,
 	LBRACE, RBRACE,
 	DOT, DOUBLE_DOT, COMMA,
-    SEMICOLON, DOLLAR,
-    EQUAL, RBRACKET, LBRACKET,
-    MINUS,
+    SEMICOLON, EQUAL, 
+    MINUS, LBRACKET, RBRACKET,
 
 	STRING, INT, DOUBLE, BOOL, IDENTIFIER,
     _NULL,
@@ -34,13 +33,12 @@ enum class TokenType {
 };
 
 inline static const std::unordered_map<TokenType, std::string> tokens_map = {
-	{TokenType::LPAREN, "LParen"}, {TokenType::RPAREN, "RParen"},
-	{TokenType::LBRACE, "LBrace"}, {TokenType::RBRACE, "RBrace"},
-	{TokenType::DOT, "Dot"}, {TokenType::DOUBLE_DOT, "Double_Dot"},
-	{TokenType::COMMA, "Comma"}, {TokenType::SEMICOLON, "Semicolon"}, 
-    {TokenType::DOLLAR, "Dollar"}, {TokenType::EQUAL, "Equal"},
-    {TokenType::LBRACKET, "LBracket"}, {TokenType::RBRACKET, "RBracket"},
-    {TokenType::MINUS, "Minus"},
+	{TokenType::LPAREN, "("}, {TokenType::RPAREN, ")"},
+	{TokenType::LBRACE, "{"}, {TokenType::RBRACE, "}"},
+	{TokenType::DOT, "."}, {TokenType::DOUBLE_DOT, ".."},
+	{TokenType::COMMA, ","}, {TokenType::SEMICOLON, ";"}, 
+    {TokenType::EQUAL, "="}, {TokenType::MINUS, "-"},
+    {TokenType::LBRACKET, "["}, {TokenType::RBRACKET, "]"},
 
 	{TokenType::STRING, "String"}, {TokenType::INT, "Int"},
     {TokenType::DOUBLE, "Double"}, {TokenType::BOOL, "Bool"}, 

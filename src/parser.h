@@ -43,6 +43,7 @@ private:
 	void advance();
 	Token &previous();
 	void consume(TokenType type, const std::string &message);
+    void synchronize();
 	[[noreturn]]
 	void error(const std::string &message);
 private:

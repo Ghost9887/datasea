@@ -8,15 +8,7 @@
 class ParseError : public std::runtime_error {
 public:
     ParseError(const std::string& message)
-        : std::runtime_error(format(message)) {}
-
-private:
-    static std::string format(const std::string& message) {
-        std::ostringstream oss;
-        oss << "[ Parse Error ]\n"
-            << "reason: " << message;
-        return oss.str();
-    }
+        : std::runtime_error(message) {}
 };
 
 #endif

@@ -7,11 +7,11 @@
 
 class Scanner {
 public:
-	Scanner(std::string source);
+	Scanner(std::string &source);
 	std::vector<Token> tokenize();
 	~Scanner() = default;
 private:
-	std::string m_source;
+	std::string &m_source;
 	size_t m_start { 0 };
 	size_t m_current { 0 };
 	size_t m_line { 1 };

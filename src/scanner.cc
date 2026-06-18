@@ -1,6 +1,6 @@
 #include <scanner.h>
 
-Scanner::Scanner(std::string source) :
+Scanner::Scanner(std::string &source) :
 	m_source(source) {}
 
 std::vector<Token> Scanner::tokenize() {
@@ -15,7 +15,6 @@ std::vector<Token> Scanner::tokenize() {
 			case '}': make_token(TokenType::RBRACE); break;
             case '[': make_token(TokenType::LBRACKET); break;
             case ']': make_token(TokenType::RBRACKET); break;
-            case '$': make_token(TokenType::DOLLAR); break;
             case '=': make_token(TokenType::EQUAL); break;
             case '/': {
                 if (peek() == '/') {
@@ -62,7 +61,8 @@ char Scanner::peek() {
 }
 
 void Scanner::make_token(TokenType type) {
-	m_tokens.emplace_back(Token(type, Value{ std::monostate() }, m_line, m_column));
+    size_t size { tokens_map.at(type).size() };
+	m_tokens.emplace_back(Token(type, Value{ std::monostate() }, m_line, m_column - size));
 }
 
 void Scanner::make_token(TokenType type, Value value) {
