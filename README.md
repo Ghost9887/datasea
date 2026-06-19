@@ -1,7 +1,5 @@
 # Datasea ![License](https://img.shields.io/badge/license-MIT-blue)
 
-[STILL A WORK IN PROGRESS]
-
 Datasea is a language to help you generate SQL data the way you want.
 
 ## USAGE
