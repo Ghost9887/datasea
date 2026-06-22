@@ -17,7 +17,7 @@ table("users", 10) {
     //randbool defaults to weight 0.5 you can pass in a different weight into the parameter
     column("active", randbool());
 
-    //this wraps back around to zero one the limit is reached
+    //this wraps back around to zero once the limit is reached
     column("state", state.at(increment(0..3)));
 
     column("score", format("{.2}", randdouble(0.0..100.0)));
